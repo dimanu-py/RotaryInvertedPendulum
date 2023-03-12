@@ -6,22 +6,19 @@ import yaml
 
 class MatlabFilesController:
 
-    def __init__(self, save_data_as_parquet=False):
+    def __init__(self):
         self.yaml_config_path = os.path.abspath(os.path.join(os.path.dirname(__file__), 'config/matlab_config.yaml'))
         configuration_params = self.read_parameters(yaml_path=self.yaml_config_path)
         self.mat_file_path = configuration_params['mat_file']['path']
         self.mat_data_name = configuration_params['mat_file']['data_name']
         self.columns_name = configuration_params['mat_file']['columns_name']
         self.drop_time_column = configuration_params['drop_time_column']
-
-        if save_data_as_parquet:
-            save_dir = configuration_params['save_file']['path']
-            save_file_name = configuration_params['save_file']['file_name']
-            self.save_path = os.path.join(save_dir, save_file_name)
-            self.save_file_as_parquet(save_path=self.save_path)
+        save_dir = configuration_params['save_file']['path']
+        save_file_name = configuration_params['save_file']['file_name']
+        self.save_path = os.path.join(save_dir, save_file_name)
 
     @staticmethod
-    def read_parameters(yaml_path=None):
+    def read_parameters(yaml_path=None) -> dict:
 
         if yaml_path is None:
             yaml_path = os.path.abspath(os.path.join(os.path.dirname(__file__), 'config/matlab_config.yaml'))
