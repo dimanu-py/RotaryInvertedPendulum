@@ -32,11 +32,11 @@ class MatlabFilesController:
 
         return matlab_parameters
 
-    def save_file_as_parquet(self, save_path: str) -> None:
+    def save_file_as_parquet(self) -> None:
 
         data = self.get_signals_data()
 
-        data.to_parquet(path=save_path,
+        data.to_parquet(path=self.save_path,
                         index=False)
 
     def get_signals_data(self) -> pd.DataFrame:

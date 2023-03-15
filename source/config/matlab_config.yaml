@@ -15,4 +15,4 @@ drop_time_column: False
 
 save_file:
   path: 'C:\Users\diego\OneDrive\Documentos\PENDULO INVERTIDO\Pendulo Invertido Diego\Python-Furuta-Pendulum\data\datasets\'
-  file_name: 'square_synthetic_data.parquet'
+  file_name: 'synthetic_data2.parquet'
