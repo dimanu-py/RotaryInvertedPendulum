@@ -1,14 +1,14 @@
 import os
 import pandas as pd
 import hdf5storage
-import yaml
+from furuta_utils import read_yaml_parameters
 
 
 class MatlabFilesController:
 
     def __init__(self):
         self.yaml_config_path = os.path.abspath(os.path.join(os.path.dirname(__file__), 'config/matlab_config.yaml'))
-        configuration_params = self.read_parameters(yaml_path=self.yaml_config_path)
+        configuration_params = read_yaml_parameters(yaml_path=self.yaml_config_path)
         self.mat_file_path = configuration_params['mat_file']['path']
         self.mat_data_name = configuration_params['mat_file']['data_name']
         self.columns_name = configuration_params['mat_file']['columns_name']
@@ -16,21 +16,6 @@ class MatlabFilesController:
         save_dir = configuration_params['save_file']['path']
         save_file_name = configuration_params['save_file']['file_name']
         self.save_path = os.path.join(save_dir, save_file_name)
-
-    @staticmethod
-    def read_parameters(yaml_path=None) -> dict:
-
-        if yaml_path is None:
-            yaml_path = os.path.abspath(os.path.join(os.path.dirname(__file__), 'config/matlab_config.yaml'))
-
-        with open(yaml_path, 'r') as params_file:
-            try:
-                matlab_parameters = yaml.load(stream=params_file,
-                                              Loader=yaml.SafeLoader)
-            except yaml.YAMLError as error:
-                print(error)
-
-        return matlab_parameters
 
     def save_file_as_parquet(self) -> None:
 
