@@ -38,6 +38,10 @@ class DataReader(DataInterface):
         data = self.database_controller.read_data(table_name=table_name)
         return data
 
+    def run(self, table_name: str) -> pd.DataFrame:
+        data = self.read_data_from_database(table_name=table_name)
+        return data
+
 
 class DataInserter(DataInterface):
     def __init__(self):
@@ -53,3 +57,8 @@ class DataInserter(DataInterface):
 
     def read_data_from_database(self, table_name: str) -> pd.DataFrame:
         raise NotImplementedError('DataInserter can not read data from database, only inserte it.')
+
+    def run(self, table_name) -> None:
+        data_from_matlab = self.read_matlab_file()
+        self.insert_data_to_database(data=data_from_matlab,
+                                     table_name=table_name)
