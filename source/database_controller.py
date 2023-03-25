@@ -40,8 +40,8 @@ class DatabaseController:
 
         columns = self.get_table_columns(table_name=table_name)
 
-        insert_data_query = self.query(table_name=table_name,
-                                       table_columns=columns)
+        insert_data_query = self.insert_query(table_name=table_name,
+                                              table_columns=columns)
 
         chunk = data.to_numpy().tolist()
         try:
@@ -57,9 +57,7 @@ class DatabaseController:
     def create_connection(self):
         try:
             conn = self.engine.raw_connection()
-            if conn.connection.open:
-                print("Connect to database", self.settings.DB_NAME)
-                return conn
+            return conn
 
         except Exception as e:
             print(f'Error {e.args[1]}')
@@ -88,8 +86,25 @@ class DatabaseController:
             print(f'Error {e.args[1]}')
 
     @staticmethod
-    def query(table_name: str, table_columns: list[str]) -> str:
+    def insert_query(table_name: str, table_columns: list[str]) -> str:
         query = f"INSERT INTO {table_name} ({', '.join(table_columns)}) VALUES ({', '.join(['%s'] * len(table_columns))})"
+        return query
+
+    def read_data(self, table_name: str) -> pd.DataFrame:
+        columns = self.get_table_columns(table_name=table_name)
+        conn = self.create_connection()
+        query = self.read_query(table_name=table_name,
+                                table_columns=columns,
+                                db_name=self.settings.DB_NAME)
+
+        data = pd.read_sql(sql=query,
+                           con=conn)
+
+        return data
+
+    @staticmethod
+    def read_query(table_name: str, table_columns: list[str], db_name: str) -> str:
+        query = f"SELECT {' ,'.join(table_columns)} FROM {db_name}.{table_name};"
         return query
 
     def insert_data_using_pandas(self, table_name: str, data: pd.DataFrame, chunk_size: int = 500_000) -> None:

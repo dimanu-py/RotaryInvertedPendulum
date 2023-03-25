@@ -1,3 +1,4 @@
+import pandas as pd
 import pytest
 
 from source.database_controller import DatabaseController
@@ -47,13 +48,22 @@ def test_get_table(obj_database_controller):
 
 
 @pytest.mark.parametrize('table_name, table_columns',
-                         [('deep_learning_synthetic_data', ['time', 'set_point_rotary_arm', 'control_law', 'position_rotary_arm', 'position_pendulum_wrapped', 'speed_rotary_arm', 'speed_pendulum', 'position_pendulum'])])
-def test_query(obj_database_controller, table_name, table_columns):
+                         [('pruebas', ['time', 'set_point_rotary_arm', 'control_law', 'position_rotary_arm', 'position_pendulum_wrapped', 'speed_rotary_arm', 'speed_pendulum', 'position_pendulum'])])
+def test_insert_query(obj_database_controller, table_name, table_columns):
     expected_query = f"INSERT INTO {table_name} ({', '.join(table_columns)}) VALUES ({', '.join(['%s'] * len(table_columns))})"
     columns = obj_database_controller.get_table_columns(table_name=table_name)
 
-    query = obj_database_controller.query(table_name=table_name,
-                                          table_columns=columns)
+    query = obj_database_controller.insert_query(table_name=table_name, table_columns=columns)
 
     assert query is not None
     assert query == expected_query
+
+
+@pytest.mark.parametrize('table_name', ['pruebas'])
+def test_read_data(obj_database_controller, table_name):
+    data = obj_database_controller.read_data(table_name=table_name)
+    columns_name = obj_database_controller.get_table_columns(table_name=table_name)
+
+    assert data is not None
+    assert isinstance(data, pd.DataFrame)
+    assert data.columns.all == columns_name
