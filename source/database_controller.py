@@ -1,5 +1,3 @@
-import time
-
 import pandas as pd
 from sqlalchemy import create_engine, MetaData
 from sqlalchemy.ext.automap import automap_base
@@ -33,7 +31,7 @@ class DatabaseController:
 
         return database_url
 
-    def insert_data_using_sql(self, table_name: str, data: pd.DataFrame = None) -> None:
+    def insert_data_to_database(self, table_name: str, data: pd.DataFrame = None) -> None:
 
         conn = self.create_connection()
         cursor = self.create_cursor(conn=conn)
@@ -106,18 +104,4 @@ class DatabaseController:
     def read_query(table_name: str, table_columns: list[str], db_name: str) -> str:
         query = f"SELECT {' ,'.join(table_columns)} FROM {db_name}.{table_name};"
         return query
-
-    def insert_data_using_pandas(self, table_name: str, data: pd.DataFrame, chunk_size: int = 500_000) -> None:
-        try:
-
-            start_runtime = time.time()
-            print(f'Begin to insert data of {len(data)} rows')
-            data.to_sql(name=table_name,
-                        con=self.engine,
-                        if_exists='append',
-                        index=False,
-                        chunksize=chunk_size)
-            print(f'Finished inserting data after {time.time() - start_runtime}')
-        except Exception as e:
-            print(f'Error {e.args[1]}')
 
