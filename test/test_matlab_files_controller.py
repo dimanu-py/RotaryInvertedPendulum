@@ -9,12 +9,7 @@ def matlab_controller_object():
     return MatlabFilesController()
 
 
-def test_read_parameters(matlab_controller_object):
-    parameters = matlab_controller_object.read_parameters()
-    assert isinstance(parameters, dict)
-
-
-def test_signals_data(matlab_controller_object):
+def test_get_signals_data(matlab_controller_object):
     data = matlab_controller_object.get_signals_data()
     assert isinstance(data, pd.DataFrame)
 

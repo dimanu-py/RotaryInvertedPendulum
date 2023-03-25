@@ -14,37 +14,26 @@ class MatlabFilesController:
         self.mat_file_path = configuration_params['mat_file']['path']
         self.mat_data_name = configuration_params['mat_file']['data_name']
         self.columns_name = configuration_params['mat_file']['columns_name']
-        self.drop_time_column = configuration_params['drop_time_column']
         save_dir = configuration_params['save_file']['path']
         save_file_name = configuration_params['save_file']['file_name']
         self.save_path = os.path.join(save_dir, save_file_name)
 
-    def save_file_as_parquet(self) -> None:
-
-        data = self.get_signals_data()
-
-        data.to_parquet(path=self.save_path,
-                        index=False)
-
     def get_signals_data(self) -> pd.DataFrame:
 
         matlab_data = self.load_matlab_file()
-        signals_data = matlab_data.get(self.mat_data_name).transpose()
+        try:
+            signals_data = matlab_data.get(self.mat_data_name).transpose()
 
-        df_signals = pd.DataFrame(data=signals_data,
-                                  columns=self.columns_name)
+            df_signals = pd.DataFrame(data=signals_data,
+                                      columns=self.columns_name)
 
-        # TODO: drop time column shouldn't be manage by this class.
-        """
-        We want to read all the data inside the .mat file and store it in a dataframe.
-        Then, this data will be loaded into the database where the 'time' column allways exists.
-        Is when we are creating the dataset for training where we should decide wheter if we want to include
-        the time column or not to read it from the database.
-        """
-        df_signals = df_signals if not self.drop_time_column else df_signals.drop(columns=['time'])
-
-        return df_signals
+            return df_signals
+        except Exception as e:
+            print(f'Error converting matlab data to dataframe {e.args[1]}')
 
     def load_matlab_file(self) -> dict:
-        matlab_data = hdf5storage.loadmat(file_name=self.mat_file_path)
-        return matlab_data
+        try:
+            matlab_data = hdf5storage.loadmat(file_name=self.mat_file_path)
+            return matlab_data
+        except Exception as e:
+            print(f'Error loading matlab file {e.args[1]}')

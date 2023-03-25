@@ -1,8 +1,9 @@
 import os
-import pyarrow
+
 import pandas as pd
-import yaml
+import pyarrow
 import pyarrow.parquet as pq
+import yaml
 
 
 def read_yaml_parameters(yaml_path=None) -> dict:
