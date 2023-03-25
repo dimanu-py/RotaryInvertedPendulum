@@ -14,9 +14,6 @@ class MatlabFilesController:
         self.mat_file_path = configuration_params['mat_file']['path']
         self.mat_data_name = configuration_params['mat_file']['data_name']
         self.columns_name = configuration_params['mat_file']['columns_name']
-        save_dir = configuration_params['save_file']['path']
-        save_file_name = configuration_params['save_file']['file_name']
-        self.save_path = os.path.join(save_dir, save_file_name)
 
     def get_signals_data(self) -> pd.DataFrame:
 
