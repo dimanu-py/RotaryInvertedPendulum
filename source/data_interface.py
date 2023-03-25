@@ -1,9 +1,11 @@
+import os
+from abc import ABC, abstractmethod
+
 import pandas as pd
 
 from source.database_controller import DatabaseController
+from source.furuta_utils import read_yaml_parameters, save_file_as_parquet
 from source.matlab_files_controller import MatlabFilesController
-
-from abc import ABC, abstractmethod
 
 
 class DataInterface(ABC):
@@ -25,8 +27,14 @@ class DataInterface(ABC):
 
 
 class DataReader(DataInterface):
-    def __init__(self):
+    def __init__(self, save_data_flag: bool = False):
         super().__init__()
+        self.yaml_config_path = os.path.abspath(os.path.join(os.path.dirname(__file__), 'config/data_reader_config.yaml'))
+        configuration_params = read_yaml_parameters(yaml_path=self.yaml_config_path)
+        save_dir = configuration_params['save_file']['path']
+        save_file_name = configuration_params['save_file']['file_name']
+        self.save_path = os.path.join(save_dir, save_file_name)
+        self.save_data_flag = save_data_flag
 
     def read_matlab_file(self) -> pd.DataFrame:
         raise NotImplementedError('DataReader can only access database.')
@@ -40,6 +48,11 @@ class DataReader(DataInterface):
 
     def run(self, table_name: str) -> pd.DataFrame:
         data = self.read_data_from_database(table_name=table_name)
+
+        if self.save_data_flag:
+            save_file_as_parquet(data=data,
+                                 save_path=self.save_path)
+
         return data
 
 

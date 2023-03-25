@@ -1,0 +1,3 @@
+save_file:
+  path: 'C:\PROGRAMACION\PENDULO INVERTIDO\Pendulo Invertido Diego\Python-Furuta-Pendulum\data\datasets'
+  file_name: 'synthetic_data2.parquet'
