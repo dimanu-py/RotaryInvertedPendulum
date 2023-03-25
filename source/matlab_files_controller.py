@@ -34,6 +34,13 @@ class MatlabFilesController:
         df_signals = pd.DataFrame(data=signals_data,
                                   columns=self.columns_name)
 
+        # TODO: drop time column shouldn't be manage by this class.
+        """
+        We want to read all the data inside the .mat file and store it in a dataframe.
+        Then, this data will be loaded into the database where the 'time' column allways exists.
+        Is when we are creating the dataset for training where we should decide wheter if we want to include
+        the time column or not to read it from the database.
+        """
         df_signals = df_signals if not self.drop_time_column else df_signals.drop(columns=['time'])
 
         return df_signals
