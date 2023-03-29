@@ -1,5 +1,3 @@
-import time
-
 import pandas as pd
 from sqlalchemy import create_engine, MetaData
 from sqlalchemy.ext.automap import automap_base
@@ -33,7 +31,7 @@ class DatabaseController:
 
         return database_url
 
-    def insert_data_using_sql(self, table_name: str, data: pd.DataFrame = None) -> None:
+    def insert_data(self, table_name: str, data: pd.DataFrame = None) -> None:
 
         conn = self.create_connection()
         cursor = self.create_cursor(conn=conn)
@@ -49,7 +47,7 @@ class DatabaseController:
             conn.commit()
         except Exception as e:
             conn.rollback()
-            print(f'Error inserting data: {e}')
+            print(f'Error inserting data into database: {e.args[1]}')
         finally:
             cursor.close()
             conn.close()
@@ -60,7 +58,7 @@ class DatabaseController:
             return conn
 
         except Exception as e:
-            print(f'Error {e.args[1]}')
+            print(f'Error creating connection to database {e.args[1]}')
 
     @staticmethod
     def create_cursor(conn):
@@ -68,7 +66,7 @@ class DatabaseController:
             cursor = conn.cursor()
             return cursor
         except Exception as e:
-            print(f'Error {e.args[1]}')
+            print(f'Error creating cursor {e.args[1]}')
 
     def get_table_columns(self, table_name: str) -> list[str]:
         try:
@@ -76,14 +74,14 @@ class DatabaseController:
             columns = [column.name for column in table.__table__.columns if not column.primary_key]
             return columns
         except Exception as e:
-            print(f'Error {e.args[1]}')
+            print(f'Error getting table columns {e.args[1]}')
 
     def get_table(self, table_name: str):
         try:
             table = getattr(self.base.classes, table_name)
             return table
         except Exception as e:
-            print(f'Error {e.args[1]}')
+            print(f'Error getting table from database {e.args[1]}')
 
     @staticmethod
     def insert_query(table_name: str, table_columns: list[str]) -> str:
@@ -96,28 +94,15 @@ class DatabaseController:
         query = self.read_query(table_name=table_name,
                                 table_columns=columns,
                                 db_name=self.settings.DB_NAME)
-
-        data = pd.read_sql(sql=query,
-                           con=conn)
-
-        return data
+        try:
+            data = pd.read_sql(sql=query,
+                               con=conn)
+            return data
+        except Exception as e:
+            print(f'Error reading data from database {e.args[1]}')
 
     @staticmethod
     def read_query(table_name: str, table_columns: list[str], db_name: str) -> str:
         query = f"SELECT {' ,'.join(table_columns)} FROM {db_name}.{table_name};"
         return query
-
-    def insert_data_using_pandas(self, table_name: str, data: pd.DataFrame, chunk_size: int = 500_000) -> None:
-        try:
-
-            start_runtime = time.time()
-            print(f'Begin to insert data of {len(data)} rows')
-            data.to_sql(name=table_name,
-                        con=self.engine,
-                        if_exists='append',
-                        index=False,
-                        chunksize=chunk_size)
-            print(f'Finished inserting data after {time.time() - start_runtime}')
-        except Exception as e:
-            print(f'Error {e.args[1]}')
 
