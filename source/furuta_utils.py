@@ -1,8 +1,6 @@
 import os
 
 import pandas as pd
-import pyarrow
-import pyarrow.parquet as pq
 import yaml
 
 
@@ -19,23 +17,27 @@ def read_yaml_parameters(yaml_path: str = None) -> dict:
             return parameters
 
         except Exception as e:
-            print(e)
+            print(f'Error loading yaml {e.args[1]}')
 
 
-def save_file_as_parquet(data: pd.DataFrame, save_path: str) -> None:
-    if not os.path.exists(save_path):
-        os.makedirs(save_path)
+def save_file_as_parquet(data: pd.DataFrame, save_dir: str, save_file_name: str) -> None:
+    if not os.path.exists(save_dir):
+        os.makedirs(save_dir)
 
-    if isinstance(data, pd.DataFrame):
-        data.to_parquet(path=save_path,
+    full_path = os.path.join(save_dir, save_file_name)
+
+    try:
+        data.to_parquet(path=full_path,
                         index=False)
 
-    else:
-        with open(save_path, 'wb') as file:
-            table = pyarrow.Table.from_pandas(df=data)
-            pq.write_table(table=table,
-                           where=file)
+    except Exception as e:
+        print(f'Error saving data as parquet {e.args[1]}')
 
 
 def load_parquet(path, file):
-    return pd.read_parquet(path=f"{path}/{file}.parquet")
+    try:
+        data = pd.read_parquet(path=f"{path}/{file}.parquet")
+        return data
+
+    except Exception as e:
+        print(f'Error reading parquet file {e.args[1]}')
