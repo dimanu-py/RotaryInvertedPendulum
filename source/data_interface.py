@@ -20,5 +20,5 @@ class DataInterface(ABC):
         pass
 
     @abstractmethod
-    def read_data_from_database(self, table_name: str, columns: list[str]) -> pd.DataFrame:
+    def read_data_from_database(self, table_name: str, columns: list[str] = None) -> pd.DataFrame:
         pass

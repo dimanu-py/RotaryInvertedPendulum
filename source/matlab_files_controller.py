@@ -17,7 +17,7 @@ class MatlabFilesController:
 
     def get_signals_data(self) -> pd.DataFrame:
 
-        matlab_data = self.load_matlab_file()
+        matlab_data = self.load_matlab_file(matlab_file_path=self.mat_file_path)
         try:
             signals_data = matlab_data.get(self.mat_data_name).transpose()
 
@@ -28,9 +28,10 @@ class MatlabFilesController:
         except Exception as e:
             print(f'Error converting matlab data to dataframe {e.args[1]}')
 
-    def load_matlab_file(self) -> dict:
+    @staticmethod
+    def load_matlab_file(matlab_file_path) -> dict:
         try:
-            matlab_data = hdf5storage.loadmat(file_name=self.mat_file_path)
+            matlab_data = hdf5storage.loadmat(file_name=matlab_file_path)
             return matlab_data
         except Exception as e:
             print(f'Error loading matlab file {e.args[1]}')

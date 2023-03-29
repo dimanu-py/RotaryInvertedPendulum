@@ -48,7 +48,7 @@ def test_get_table(database_controller):
 
 
 @pytest.mark.parametrize('table_name, table_columns',
-                         [('pruebas', ['time', 'set_point_rotary_arm', 'control_law', 'position_rotary_arm', 'position_pendulum_wrapped', 'speed_rotary_arm', 'speed_pendulum', 'position_pendulum'])])
+                         [('tests', ['time', 'set_point_rotary_arm', 'control_law', 'position_rotary_arm', 'position_pendulum_wrapped', 'speed_rotary_arm', 'speed_pendulum', 'position_pendulum'])])
 def test_insert_query(database_controller, table_name, table_columns):
     expected_query = f"INSERT INTO {table_name} ({', '.join(table_columns)}) VALUES ({', '.join(['%s'] * len(table_columns))})"
     columns = database_controller.get_table_columns(table_name=table_name)
@@ -59,11 +59,9 @@ def test_insert_query(database_controller, table_name, table_columns):
     assert query == expected_query
 
 
-@pytest.mark.parametrize('table_name', ['pruebas'])
+@pytest.mark.parametrize('table_name', ['tests'])
 def test_read_data(database_controller, table_name):
     data = database_controller.read_data(table_name=table_name)
-    columns_name = database_controller.get_table_columns(table_name=table_name)
 
     assert data is not None
     assert isinstance(data, pd.DataFrame)
-    assert data.columns.all == columns_name

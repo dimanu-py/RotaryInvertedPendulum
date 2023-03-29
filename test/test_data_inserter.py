@@ -1,7 +1,7 @@
 import pandas as pd
 import pytest
 
-from source.data_interface import DataInserter
+from source.data_inserter import DataInserter
 
 
 @pytest.fixture(scope='function')
@@ -26,7 +26,7 @@ def test_insert_data_to_database(data_inserter_controller, table_name, chunk_siz
                                                      data=data)
 
 
-@pytest.mark.parametrize('table_name', ['tests'])
-def test_read_data_from_database(data_inserter_controller, table_name):
+@pytest.mark.parametrize('table_name, columns', [('tests', ['position_rotary_arm'])])
+def test_read_data_from_database(data_inserter_controller, table_name, columns):
     with pytest.raises(NotImplementedError):
-        data_inserter_controller.read_data_from_database(table_name=table_name)
+        data_inserter_controller.read_data_from_database(table_name=table_name, columns=columns)

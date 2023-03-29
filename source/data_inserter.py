@@ -21,7 +21,7 @@ class DataInserter(DataInterface):
         self.database_controller.insert_data(table_name=table_name,
                                              data=data)
 
-    def read_data_from_database(self, table_name: str, columns: list[str]) -> pd.DataFrame:
+    def read_data_from_database(self, table_name: str, columns: list[str] = None) -> pd.DataFrame:
         raise NotImplementedError('DataInserter can not read data from database, only inserte it.')
 
     def run(self) -> None:
