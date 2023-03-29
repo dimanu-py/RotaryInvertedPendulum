@@ -34,7 +34,7 @@ def test_read_data_from_database(data_reader_controller, table_name):
 
 @pytest.mark.parametrize('table_name', ['tests'])
 def test_run_data_reader(data_reader_controller, table_name):
-    data = data_reader_controller.run(table_name=table_name)
+    data = data_reader_controller.run()
 
     expected_columns = ['time', 'set_point_rotary_arm', 'control_law', 'position_rotary_arm', 'position_pendulum_wrapped', 'speed_rotary_arm', 'speed_pendulum', 'position_pendulum']
 

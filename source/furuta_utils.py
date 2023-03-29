@@ -6,10 +6,10 @@ import pyarrow.parquet as pq
 import yaml
 
 
-def read_yaml_parameters(yaml_path=None) -> dict:
+def read_yaml_parameters(yaml_path: str = None) -> dict:
 
     if yaml_path is None:
-        raise TypeError('yaml path must not be None')
+        yaml_path = os.path.abspath(os.path.join(os.path.dirname(__file__), 'config/parameters.yaml'))
 
     with open(yaml_path, 'r') as params_file:
         try:
@@ -38,4 +38,4 @@ def save_file_as_parquet(data: pd.DataFrame, save_path: str) -> None:
 
 
 def load_parquet(path, file):
-    return pd.read_parquet(path=f"{path}/{file}.pkl")
+    return pd.read_parquet(path=f"{path}/{file}.parquet")

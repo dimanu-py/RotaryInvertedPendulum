@@ -29,11 +29,12 @@ class DataInterface(ABC):
 class DataReader(DataInterface):
     def __init__(self, save_data_flag: bool = False):
         super().__init__()
-        self.yaml_config_path = os.path.abspath(os.path.join(os.path.dirname(__file__), 'config/data_reader_config.yaml'))
-        configuration_params = read_yaml_parameters(yaml_path=self.yaml_config_path)
-        save_dir = configuration_params['save_file']['path']
-        save_file_name = configuration_params['save_file']['file_name']
+        configuration_params = read_yaml_parameters().get('data_reader')
+        save_dir = configuration_params['save_path']
+        save_file_name = configuration_params['file_name']
         self.save_path = os.path.join(save_dir, save_file_name)
+        self.db_table = configuration_params['table']
+        self.columns_to_get = configuration_params['columns']
         self.save_data_flag = save_data_flag
 
     def read_matlab_file(self) -> pd.DataFrame:
@@ -42,12 +43,13 @@ class DataReader(DataInterface):
     def insert_data_to_database(self, data: pd.DataFrame, table_name: str) -> None:
         raise NotImplementedError('DataReader must read data from database not insert it.')
 
-    def read_data_from_database(self, table_name: str) -> pd.DataFrame:
-        data = self.database_controller.read_data(table_name=table_name)
+    def read_data_from_database(self) -> pd.DataFrame:
+        data = self.database_controller.read_data(table_name=self.db_table,
+                                                  columns=self.columns_to_get)
         return data
 
-    def run(self, table_name: str) -> pd.DataFrame:
-        data = self.read_data_from_database(table_name=table_name)
+    def run(self) -> pd.DataFrame:
+        data = self.read_data_from_database()
 
         if self.save_data_flag:
             save_file_as_parquet(data=data,
@@ -75,3 +77,8 @@ class DataInserter(DataInterface):
         data_from_matlab = self.read_matlab_file()
         self.insert_data_to_database(data=data_from_matlab,
                                      table_name=table_name)
+
+
+if __name__ == '__main__':
+    data_reader = DataReader()
+    data_reader.run()

@@ -88,8 +88,7 @@ class DatabaseController:
         query = f"INSERT INTO {table_name} ({', '.join(table_columns)}) VALUES ({', '.join(['%s'] * len(table_columns))})"
         return query
 
-    def read_data(self, table_name: str) -> pd.DataFrame:
-        columns = self.get_table_columns(table_name=table_name)
+    def read_data(self, table_name: str, columns: list[str]) -> pd.DataFrame:
         conn = self.create_connection()
         query = self.read_query(table_name=table_name,
                                 table_columns=columns,
