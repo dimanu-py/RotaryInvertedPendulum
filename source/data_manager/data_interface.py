@@ -2,8 +2,8 @@ from abc import ABC, abstractmethod
 
 import pandas as pd
 
-from source.database_controller import DatabaseController
-from source.matlab_files_controller import MatlabFilesController
+from database_controller import DatabaseController
+from matlab_files_controller import MatlabFilesController
 
 
 class DataInterface(ABC):

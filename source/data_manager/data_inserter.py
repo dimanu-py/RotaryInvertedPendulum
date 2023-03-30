@@ -2,14 +2,15 @@ import os
 
 import pandas as pd
 
-from source.data_interface import DataInterface
+from data_interface import DataInterface
 from source.furuta_utils import read_yaml_parameters
 
 
 class DataInserter(DataInterface):
     def __init__(self):
         super().__init__()
-        self.yaml_config_path = os.path.abspath(os.path.join(os.path.dirname(__file__), 'config/data_inserter_config.yaml'))
+        self.yaml_config_path = os.path.abspath(os.path.join(os.path.dirname(__file__),
+                                                             '../config/data_inserter_config.yaml'))
         configuration_params = read_yaml_parameters(yaml_path=self.yaml_config_path).get('data_inserter')
         self.table_name = configuration_params['table']
 

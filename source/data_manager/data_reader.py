@@ -1,6 +1,6 @@
 import pandas as pd
 
-from source.data_interface import DataInterface
+from data_interface import DataInterface
 from source.furuta_utils import read_yaml_parameters, save_file_as_parquet
 
 

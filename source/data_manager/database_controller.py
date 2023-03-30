@@ -2,7 +2,7 @@ import pandas as pd
 from sqlalchemy import create_engine, MetaData
 from sqlalchemy.ext.automap import automap_base
 
-from source.database_settings import DatabaseSettings
+from database_settings import DatabaseSettings
 
 
 class DatabaseController:
