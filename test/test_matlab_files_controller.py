@@ -9,16 +9,14 @@ def matlab_controller_object():
     return MatlabFilesController()
 
 
-def test_read_parameters(matlab_controller_object):
-    parameters = matlab_controller_object.read_parameters()
-    assert isinstance(parameters, dict)
-
-
-def test_signals_data(matlab_controller_object):
+def test_get_signals_data(matlab_controller_object):
     data = matlab_controller_object.get_signals_data()
+
+    assert not data.empty
     assert isinstance(data, pd.DataFrame)
 
 
-def test_load_matlab_file(matlab_controller_object):
-    mat_data = matlab_controller_object.load_matlab_file()
+@pytest.mark.parametrize('mat_file_path', [r'C:\PROGRAMACION\PENDULO INVERTIDO\Pendulo Invertido Diego\Matlab-Furuta-Pendulum\Simulink\dataAcquisition\synthetic_data.mat'])
+def test_load_matlab_file(matlab_controller_object, mat_file_path):
+    mat_data = matlab_controller_object.load_matlab_file(matlab_file_path=mat_file_path)
     assert isinstance(mat_data, dict)

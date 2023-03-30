@@ -1,4 +1,4 @@
-mat_file:
+matlab_file:
   path: 'C:\PROGRAMACION\PENDULO INVERTIDO\Pendulo Invertido Diego\Matlab-Furuta-Pendulum\Simulink\dataAcquisition\synthetic_data.mat'
   data_name: 'data'
   columns_name:
@@ -11,8 +11,5 @@ mat_file:
     - 'speed_pendulum'
     - 'position_pendulum'
 
-drop_time_column: False
-
-save_file:
-  path: 'C:\PROGRAMACION\PENDULO INVERTIDO\Pendulo Invertido Diego\Python-Furuta-Pendulum\data\datasets'
-  file_name: 'synthetic_data2.parquet'
+data_inserter:
+  table: 'tests'

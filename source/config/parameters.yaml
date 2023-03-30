@@ -1,0 +1,11 @@
+data_reader:
+  save_path: 'C:\PROGRAMACION\PENDULO INVERTIDO\Pendulo Invertido Diego\Python-Furuta-Pendulum\data\datasets'
+  file_name: 'synthetic_data.parquet'
+  table: 'tests'
+  columns:
+    - 'set_point_rotary_arm'
+    - 'control_law'
+    - 'position_rotary_arm'
+    - 'position_pendulum_wrapped'
+    - 'speed_rotary_arm'
+    - 'speed_pendulum'
