@@ -10,7 +10,7 @@ class MatlabFilesController:
 
     def __init__(self):
         self.yaml_config_path = os.path.abspath(os.path.join(os.path.dirname(__file__),
-                                                             '../config/data_inserter_config.yaml'))
+                                                             'config/data_inserter_config.yaml'))
         configuration_params = read_yaml_parameters(yaml_path=self.yaml_config_path).get('matlab_file')
         self.mat_file_path = configuration_params['path']
         self.mat_data_name = configuration_params['data_name']
