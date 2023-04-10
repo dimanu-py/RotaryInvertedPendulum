@@ -1,11 +1,10 @@
 import pandas as pd
 
 from source.env_settings import EnvSettings
-from source.helpers.matlab_files_controller import MatlabFilesController
-from source.helpers.data_saver import SaveFile
+from helpers.matlab_files_controller import MatlabFilesController
+from helpers.data_saver import SaveFile
 
 
-# TODO: acceder a las variables de entorno para los paths
 class HelpersRun:
 
     def __init__(self, matlab_controller: MatlabFilesController, file_saver: SaveFile):
