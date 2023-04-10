@@ -1,0 +1,24 @@
+schema: '2.0'
+stages:
+  data_reader:
+    cmd: python source/data_reader.py
+    deps:
+    - path: source/data_interface.py
+      md5: 4a9af0e7bf330f2d8e67fd22786b4a53
+      size: 720
+    - path: source/data_reader.py
+      md5: f787926a649ba12f7e0e6de08f93de70
+      size: 1644
+    params:
+      config/parameters.yaml:
+        data_reader.columns:
+        - set_point_rotary_arm
+        - control_law
+        - position_rotary_arm
+        - position_pendulum_wrapped
+        - speed_rotary_arm
+        - speed_pendulum
+        data_reader.file_name: pipeline_tests.parquet
+        data_reader.save_path: C:\PROGRAMACION\PENDULO INVERTIDO\Pendulo Invertido
+          Diego\Python-Furuta-Pendulum\data\datasets
+        data_reader.table: tests

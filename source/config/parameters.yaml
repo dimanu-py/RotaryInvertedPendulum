@@ -1,7 +1,22 @@
-data_reader:
-  save_path: 'C:\PROGRAMACION\PENDULO INVERTIDO\Pendulo Invertido Diego\Python-Furuta-Pendulum\data\datasets'
-  file_name: 'synthetic_data.parquet'
-  table: 'tests'
+matlab_controller:
+  file_name: 'synthetic_data_stabilization.mat'
+  data_name: 'data'
+  columns_name:
+    - 'time'
+    - 'set_point_rotary_arm'
+    - 'control_law'
+    - 'position_rotary_arm'
+    - 'position_pendulum_wrapped'
+    - 'speed_rotary_arm'
+    - 'speed_pendulum'
+    - 'position_pendulum'
+
+data_saver:
+  file_name: 'synthetic_data_stabilization_test'
+  extension: 'parquet'
+
+featurize:
+  file_name: 'synthetic_data_stabilization.parquet'
   columns:
     - 'set_point_rotary_arm'
     - 'control_law'
