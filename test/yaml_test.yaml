@@ -1,5 +1,4 @@
-mat_file:
-  path: 'C:\Users\diego\OneDrive\Documentos\PENDULO INVERTIDO\Pendulo Invertido Diego\Matlab-Furuta-Pendulum\Simulink\dataAcquisition\synthetic_data.mat'
+test_file:
   data_name: 'data'
   columns_name:
     - 'time'
@@ -10,9 +9,3 @@ mat_file:
     - 'speed_rotary_arm'
     - 'speed_pendulum'
     - 'position_pendulum'
-
-drop_time_column: False
-
-save_file:
-  path: 'C:\Users\diego\OneDrive\Documentos\PENDULO INVERTIDO\Pendulo Invertido Diego\Python-Furuta-Pendulum\data\datasets\'
-  file_name: 'synthetic_data2.parquet'
