@@ -7,24 +7,20 @@ class LoadData:
     def __init__(self, folder_path: str) -> None:
         self.folder_path = folder_path
 
-        configuration_params = read_yaml_parameters().get('data_reader')
-        self.file_name = configuration_params['file_name']
-        self.extension = configuration_params['extension'].lower()
-
         self.load_funcs = {'parquet': LoadParquet,
                            'pickle': LoadPickle}
 
-    def load_file(self) -> pd.DataFrame:
+    def load_file(self, file_name: str, extension: str) -> pd.DataFrame:
         """
         Load a file into a dataframe.
         """
-        selected_loader = self.load_funcs.get(self.extension)
+        selected_loader = self.load_funcs.get(extension)
 
         if not selected_loader:
-            raise ValueError(f"Invalid file format {self.extension}")
+            raise ValueError(f"Invalid file format {extension}")
 
         loader_instance = selected_loader(self.folder_path)
-        data_loaded = loader_instance.load_file(file_name=self.file_name)
+        data_loaded = loader_instance.load_file(file_name=file_name)
 
         return data_loaded
 

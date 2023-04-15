@@ -18,9 +18,6 @@ data_saver:
 data_reader:
   file_name: 'synthetic_data_stabilization_test'
   extension: 'parquet'
-
-featurize:
-  file_name: 'synthetic_data_stabilization.parquet'
   columns:
     - 'set_point_rotary_arm'
     - 'control_law'
