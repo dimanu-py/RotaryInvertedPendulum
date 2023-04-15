@@ -15,6 +15,10 @@ data_saver:
   file_name: 'synthetic_data_stabilization_test'
   extension: 'parquet'
 
+data_reader:
+  file_name: 'synthetic_data_stabilization_test'
+  extension: 'parquet'
+
 featurize:
   file_name: 'synthetic_data_stabilization.parquet'
   columns:
