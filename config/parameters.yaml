@@ -11,12 +11,12 @@ matlab_controller:
     - 'speed_pendulum'
     - 'position_pendulum'
 
-data_saver:
+inserter:
   file_name: 'synthetic_data_stabilization_test'
   extension: 'parquet'
 
-data_reader:
-  file_name: 'synthetic_data_stabilization_test'
+reader:
+  file_name: 'stabilization_synthetic_data'
   extension: 'parquet'
   columns:
     - 'set_point_rotary_arm'
@@ -25,3 +25,10 @@ data_reader:
     - 'position_pendulum_wrapped'
     - 'speed_rotary_arm'
     - 'speed_pendulum'
+
+splitter:
+  target:
+    - 'control_law'
+  shuffle: False
+  validation_size: 0.2
+  test_size: 0.2
