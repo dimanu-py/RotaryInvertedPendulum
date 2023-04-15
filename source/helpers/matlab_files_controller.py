@@ -7,11 +7,14 @@ from source.helpers.furuta_utils import read_yaml_parameters
 
 
 class MatlabFilesController:
-
+    """
+    Class to read data from a matlab file.
+    The location of the file is outside the project folder.
+    """
     def __init__(self, matlab_folder: str):
         self.matlab_folder_path = matlab_folder
 
-        configuration_params = read_yaml_parameters().get('matlab')
+        configuration_params = read_yaml_parameters().get('matlab_controller')
         self.mat_file_name = configuration_params['file_name']
         self.mat_data_name = configuration_params['data_name']
         self.columns_name = configuration_params['columns_name']
@@ -21,8 +24,7 @@ class MatlabFilesController:
         Organize and store data from matlab file as a dataframe.
         :return: data as a dataframe
         """
-        matlab_data = self.load_matlab_file(folder_path=self.matlab_folder_path,
-                                            file_name=self.mat_file_name)
+        matlab_data = self.load_matlab_file(folder_path=self.matlab_folder_path, file_name=self.mat_file_name)
         try:
             signals_data = matlab_data.get(self.mat_data_name).transpose()
 

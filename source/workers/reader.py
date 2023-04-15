@@ -1,26 +1,24 @@
 import pandas as pd
 
 from source.helpers.data_loader import LoadData
-from source.env_settings import EnvSettings
 from source.helpers.furuta_utils import read_yaml_parameters
 
 
-env_vars = EnvSettings.get_settings()
-
-
 class DataReader:
-
-    def __init__(self, data_loader: LoadData):
+    """
+    Class to read data from a file located inside datasets folder
+    """
+    def __init__(self, data_loader: LoadData) -> None:
         self.data_loader = data_loader
 
-        configuration_params = read_yaml_parameters().get('data_reader')
+        configuration_params = read_yaml_parameters().get('reader')
         self.file_name = configuration_params['file_name']
         self.extension = configuration_params['extension']
         self.columns_to_read = configuration_params['columns']
 
-    def run(self) -> pd.DataFrame:
+    def read_data(self) -> pd.DataFrame:
         """
-        Run the data reader.
+        Main method. Runs the data reader.
         :return: dataframe containing the data
         """
         raw_data = self.load_data(file_name=self.file_name,
@@ -50,11 +48,3 @@ class DataReader:
         """
         selected_data = data[columns]
         return selected_data
-
-
-if __name__ == '__main__':
-
-    loader = LoadData(folder_path=env_vars.DATASETS_PATH)
-
-    data_reader = DataReader(data_loader=loader)
-    data_reader.run()
