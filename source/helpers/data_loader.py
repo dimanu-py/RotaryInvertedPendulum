@@ -1,17 +1,27 @@
 import pandas as pd
+from abc import abstractmethod, ABC
 
 
-class LoadParquet:
+class DataLoader(metaclass=ABC):
+
+    def __init__(self, folder_path: str) -> None:
+        self.folder_path = folder_path
+
+    @abstractmethod
+    def load_data(self, file_name: str) -> pd.DataFrame:
+        pass
+
+
+class LoadParquet(DataLoader):
     """
     Class to load parquet files into a dataframe.
     """
     def __init__(self, folder_path: str) -> None:
-        self.folder_path = folder_path
+        super().__init__(folder_path=folder_path)
 
     def load_data(self, file_name: str) -> pd.DataFrame:
         """
         Load a file with parquet extension into a dataframe.
-        :param file_name: name of the file to load
         """
         full_path = f'{self.folder_path}\\{file_name}'
 

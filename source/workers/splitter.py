@@ -3,13 +3,8 @@ import pandas as pd
 
 from source.helpers.furuta_utils import read_yaml_parameters
 
-from source.workers.reader import DataReader
-from source.helpers.data_loader import LoadData
-from source.env_settings import EnvSettings
 
-env_vars = EnvSettings.get_settings()
-
-
+# TODO: delete __main__ when inserting into deep_learning.py
 class DataSplitter:
     """
     Class to split data into train, validation and test data
@@ -40,7 +35,9 @@ class DataSplitter:
                                                                                                    validation_size=self.validation_split_ratio,
                                                                                                    shuffle_data=self.shuffle_data)
 
-        return (train_data, train_target), (validation_data, validation_target), (test_data, test_target)
+        assert train_data.shape[0] > validation_data.shape[0]
+
+        return train_data, train_target, validation_data, validation_target, test_data, test_target
 
     def separate_target(self, target: str) -> tuple:
         """
@@ -52,7 +49,7 @@ class DataSplitter:
         return data, target
 
     @staticmethod
-    def split_train_test(data: pd.DataFrame, target: pd.Dataframe, test_size: float, shuffle_data: bool) -> tuple:
+    def split_train_test(data: pd.DataFrame, target: pd.DataFrame, test_size: float, shuffle_data: bool) -> tuple:
         """
         Split train and test data.
         :param data: dataframe containing the data
@@ -85,10 +82,22 @@ class DataSplitter:
 
 
 if __name__ == '__main__':
+    from source.workers.reader import DataReader
+    from source.helpers.data_loader import LoaderFactory
+    from source.env_settings import EnvSettings
 
-    loader = LoadData(folder_path=env_vars.DATASETS_PATH)
+    env_vars = EnvSettings.get_settings()
+
+    loader = LoaderFactory(folder_path=env_vars.DATASETS_PATH)
     reader = DataReader(data_loader=loader)
     raw_dataset = reader.read_data()
     splitter = DataSplitter(dataset=raw_dataset)
 
-    (train_data, train_target), (validation_data, validation_target), (test_data, test_target) = splitter.split_data()
+    X_train, y_train, X_val, y_val, X_test, y_test = splitter.split_data()
+
+    print("Forma de X_train:", X_train.shape)
+    print("Forma de y_train:", y_train.shape)
+    print("Forma de X_val:", X_val.shape)
+    print("Forma de y_val:", y_val.shape)
+    print("Forma de X_test:", X_test.shape)
+    print("Forma de y_test:", y_test.shape)

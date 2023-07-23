@@ -1,21 +1,21 @@
 import pandas as pd
 
 from source.helpers.matlab_files_controller import MatlabFilesController
-from source.helpers.data_saver import SaveFile
-from source.helpers.furuta_utils import read_yaml_parameters
+from source.helpers.saver_factory import SaverFactory
+from source.helpers.furuta_utils import read_yaml_parameters, extract_extension
 
 
 class DataInserter:
     """
     Gather data from matlab files and save them into a file inside data/datasets folder
     """
-    def __init__(self, matlab_controller: MatlabFilesController, file_saver: SaveFile):
+    def __init__(self, matlab_controller: MatlabFilesController, file_saver: SaverFactory):
         self.matlab_controller = matlab_controller
         self.file_saver = file_saver
 
         configuration_params = read_yaml_parameters().get('inserter')
         self.file_name = configuration_params['file_name']
-        self.extension = configuration_params['extension']
+        self.extension = extract_extension(self.file_name)
 
     def create_dataset(self) -> None:
         """
@@ -32,10 +32,10 @@ class DataInserter:
         Get data from matlab file.
         :return: matlab data store as a dataframe
         """
-        data = self.matlab_controller._transform_matlab_to_dataframe()
+        data = self.matlab_controller.transform_matlab_to_dataframe()
         return data
 
-    def save_data(self, dataframe: pd.DataFrame, file_name:str, extension: str) -> None:
+    def save_data(self, dataframe: pd.DataFrame, file_name: str, extension: str) -> None:
         """
         Save data into a file.
         :param dataframe: data to save
