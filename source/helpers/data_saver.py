@@ -1,25 +1,43 @@
 import os
+import abc
 
 import pandas as pd
 
 
-class SaveParquet:
+class SaveFile(abc.ABC):
     """
-    Class to save data into a parquet file.
+    Abstract class to save data into a file.
     """
     def __init__(self, folder_path: str) -> None:
         self.folder_path = folder_path
 
+    @abc.abstractmethod
     def save_file(self, dataframe: pd.DataFrame, save_file_name: str) -> None:
         """
-        Save a dataframe with parquet extension.
-        :param dataframe: dataframe to save
-        :param save_file_name: name of the file to be saved
+        Abstract method to save a dataframe.
+        """
+        pass
+
+    def check_folder_exists(self) -> None:
+        """
+        Check if the folder exists. If not, create it.
         """
         if not os.path.exists(self.folder_path):
             os.makedirs(self.folder_path)
 
-        full_path = f'{self.folder_path}\\{save_file_name}.parquet'
+
+class SaveParquet(SaveFile):
+    """
+    Concrete class to save data into a parquet file.
+    """
+    def __init__(self, folder_path: str) -> None:
+        super().__init__(folder_path=folder_path)
+
+    def save_file(self, dataframe: pd.DataFrame, save_file_name: str) -> None:
+        """
+        Save a dataframe with parquet extension.
+        """
+        full_path = self.build_save_path(save_file_name)
 
         try:
             dataframe.to_parquet(path=full_path,
@@ -28,28 +46,10 @@ class SaveParquet:
         except Exception as e:
             print(f'Error saving data as parquet {e.args[1]}')
 
-
-class SavePickle:
-    """
-    Class to save data into a pickle file.
-    """
-    def __init__(self, folder_path: str) -> None:
-        self.folder_path = folder_path
-
-    def save_file(self, dataframe: pd.DataFrame, save_file_name: str) -> None:
+    def build_save_path(self, save_file_name):
         """
-        Save a dataframe with pickle extension.
-        :param dataframe: dataframe to save
-        :param save_file_name: name of the file to be saved
+        Build the full path to save the file.
         """
-        if not os.path.exists(self.folder_path):
-            os.makedirs(self.folder_path)
-
-        full_path = f'{self.folder_path}\\{save_file_name}.pickle'
-
-        try:
-            dataframe.to_pickle(path=full_path,
-                                index=False)
-
-        except Exception as e:
-            print(f'Error saving data as parquet {e.args[1]}')
+        self.check_folder_exists()
+        full_path = f'{self.folder_path}\\{save_file_name}.parquet'
+        return full_path
