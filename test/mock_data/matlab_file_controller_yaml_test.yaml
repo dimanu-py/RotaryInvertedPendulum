@@ -1,0 +1,11 @@
+file_name: 'matlab_file_test.mat'
+data_name: 'data'
+columns_name:
+  - 'time'
+  - 'set_point_rotary_arm'
+  - 'control_law'
+  - 'position_rotary_arm'
+  - 'position_pendulum_wrapped'
+  - 'speed_rotary_arm'
+  - 'speed_pendulum'
+  - 'position_pendulum'
