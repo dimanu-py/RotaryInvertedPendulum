@@ -1,40 +1,23 @@
-import os
-
-import pandas as pd
 import yaml
 
 
-def read_yaml_parameters(yaml_path: str = None) -> dict:
+def read_yaml_parameters(yaml_path: str) -> dict:
     """
     Read yaml file and load content in a dictionary.
-    :param yaml_path: path to yaml file
-    :return: content as a dictionary
     """
-    if yaml_path is None:  # default path
-        yaml_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '../config/parameters.yaml'))
-
-    with open(yaml_path, 'r') as params_file:
-        try:
+    try:
+        with open(yaml_path, 'r') as params_file:
             parameters = yaml.load(stream=params_file,
                                    Loader=yaml.SafeLoader)
 
             return parameters
+    except FileNotFoundError as error:
+        print(f'Impossible to find the yaml file -> {error.args[1]}')
 
-        except Exception as e:
-            print(f'Error loading yaml {e.args[1]}')
 
-
-# TODO: encapsular esta funcionalidad en una clase extendible como con data_saver.py
-def load_parquet(path: str, file: str) -> pd.DataFrame:
+def extract_extension(file_name: str) -> str:
     """
-    Load parquet file into a dataframe
-    :param path: folder path of the file
-    :param file: name fo the file to read
-    :return: data as a dataframe
+    Extract file extension from a file name.
     """
-    try:
-        data = pd.read_parquet(path=f"{path}/{file}.parquet")
-        return data
-
-    except Exception as e:
-        print(f'Error reading parquet file {e.args[1]}')
+    extension = file_name.split('.')[-1]
+    return extension
