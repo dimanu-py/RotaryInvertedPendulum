@@ -9,9 +9,8 @@ class MatlabFilesController:
     Class to read data from a matlab file.
     The location of the file is outside the project folder.
     """
-    def __init__(self, matlab_folder: str, config_yaml_path: str) -> None:
+    def __init__(self, matlab_folder: str) -> None:
         self.matlab_folder_path = matlab_folder
-        self.config_yaml_path = config_yaml_path
 
     def transform_matlab_to_dataframe(self, data_file_name: str, mat_data_name: str, columns_name: list[str]) -> pd.DataFrame:
         """

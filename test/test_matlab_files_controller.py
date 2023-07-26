@@ -24,9 +24,8 @@ def read_yaml_params(configuration_yaml_path):
 
 
 @pytest.fixture(scope='function')
-def matlab_controller_object(matlab_file_path, configuration_yaml_path):
-    return MatlabFilesController(matlab_folder=matlab_file_path,
-                                 config_yaml_path=configuration_yaml_path)
+def matlab_controller_object(matlab_file_path):
+    return MatlabFilesController(matlab_folder=matlab_file_path)
 
 
 def test_load_matlab_file(matlab_controller_object, read_yaml_params):
