@@ -1,59 +1,15 @@
-matlab_controller:
-  file_name: 'real_data_swing_up.mat'
-  data_name: 'data'
-  columns_name:
-    - 'time'
-    - 'set_point_rotary_arm'
-    - 'control_law'
-    - 'position_rotary_arm'
-    - 'position_pendulum_wrapped'
-    - 'speed_rotary_arm'
-    - 'speed_pendulum'
-    - 'position_pendulum'
-
-inserter:
-  file_name: 'real_data_swing_up.parquet'
-
-reader:
-  file_name: 'real_data_swing_up.parquet'
-  columns:
-    - 'control_law'
-    - 'position_rotary_arm'
-    - 'position_pendulum_wrapped'
-    - 'speed_rotary_arm'
-    - 'speed_pendulum'
-
-splitter:
-  target:
-    - 'control_law'
-  shuffle: False
-  validation_size: 0.2
-  test_size: 0.2
-
-scaler:
-  type: 'min_max'
-  scale_range: (0, 1)
-
-model:
-  model_type: 'dense'
-  input_shape: (1, 6)
-  output_shape: (1, 1)
-  number_units: [16, 8, 4, 1]
-  activation_hidden_layers: 'relu'
-  activation_output_layer: 'linear'
-  loss: 'mean_squared_error'
-  optimizer: 'adam'
-  epochs: 100
-  batch_size: 32
-  verbose: 1
-  callbacks:
-    - early_stopping:
-        monitor: 'val_loss'
-        patience: 10
-        restore_best_weights: True
-    - checkpoint:
-        monitor: 'val_loss'
-        save_best_only: True
-        save_weights_only: True
-        mode: 'min'
-        filepath: 'model.h5'
+raw_dataset:
+  matlab:
+    file_name: 'real_data_swing_up.mat'
+    data: 'data'
+    columns:
+      - 'time'
+      - 'set_point_rotary_arm'
+      - 'control_law'
+      - 'position_rotary_arm'
+      - 'position_pendulum_wrapped'
+      - 'speed_rotary_arm'
+      - 'speed_pendulum'
+      - 'position_pendulum'
+  saver:
+    dataset_name: 'real_data_swing_up.parquet'

@@ -1,6 +1,6 @@
 file_name: 'matlab_file_test.mat'
 data_name: 'data'
-columns_name:
+columns:
   - 'time'
   - 'set_point_rotary_arm'
   - 'control_law'
