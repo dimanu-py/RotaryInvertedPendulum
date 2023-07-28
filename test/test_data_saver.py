@@ -19,7 +19,7 @@ def test_check_folder_exists(save_parquet_object):
 def test_build_save_path(save_parquet_object):
     save_file_name = 'test'
     full_path = save_parquet_object.build_save_path(save_file_name)
-    assert full_path == '../tests/mock_data\\test.parquet'
+    assert full_path == '../test/mock_data\\test.parquet'
 
 
 def test_save_file(save_parquet_object):
