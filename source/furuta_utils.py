@@ -1,10 +1,11 @@
 import yaml
 
 
-def read_yaml_parameters(yaml_path: str) -> dict:
+def read_yaml_parameters(folder_path: str) -> dict:
     """
     Read yaml file and load content in a dictionary.
     """
+    yaml_path = f'{folder_path}/parameters.yaml'
     try:
         with open(yaml_path, 'r') as params_file:
             parameters = yaml.load(stream=params_file,
