@@ -24,6 +24,10 @@ class FurutaPendulum:
 
         dataset_creator.create_dataset(configuration=self.configuration)
 
+    def build_model(self):
+        model_creator = ModelFactory()  # TODO: poner tipo de red que quiero crear?
+
+        model_creator.build_model(configuration=None)  # TODO: cambiar None por la configuration correspondiente
 
 if __name__ == '__main__':
     furuta_pendulum = FurutaPendulum()
