@@ -15,11 +15,11 @@ raw_dataset:
     dataset_name: 'real_data_swing_up.parquet'
 
 neural_network_model:
-  build:
-    model_type: 'dense'
-    input_shape: 8
-    number_units: [8, 4, 2, 1]
-    activation_hidden_layers: 'tanh'
+  architecture:
+    model_type: 'fully_connected'
+    input_shape: 6
+    number_units: [16, 8, 4, 1]
+    activation_hidden_layers: 'relu'
     activation_output_layer: 'linear'
   compile:
     loss: 'mae'
