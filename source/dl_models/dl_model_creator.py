@@ -10,14 +10,6 @@ from source.helpers.configuration_reader import NeuralNetworkConfiguration
 #     @abc.abstractmethod
 #     def create_model(self):
 #         pass
-#
-#     @abc.abstractmethod
-#     def compile_model(self):
-#         pass
-#
-#     @abc.abstractmethod
-#     def callbacks(self):
-#         pass
 
 
 class FullyConnectedNetwork:
@@ -26,7 +18,7 @@ class FullyConnectedNetwork:
         self.model = None
 
     def create_model(self, configuration: NeuralNetworkConfiguration) -> "FullyConnectedNetwork":
-        build = configuration.build_config
+        build = configuration.architecture_config
 
         self.model = Sequential()
 
@@ -42,14 +34,8 @@ class FullyConnectedNetwork:
                                  activation=activation_function))
         return self
 
-    def compile_model(self):
-        pass
 
-    def callbacks(self):
-        pass
-
-
-class ModelsFactory:
+class ModelFactory:
 
     models = {'dense': FullyConnectedNetwork}
 
@@ -57,7 +43,7 @@ class ModelsFactory:
         self.architecture = architecture
 
     def create_model(self):
-        selected_model = ModelsFactory.models.get(self.architecture)
+        selected_model = ModelFactory.models.get(self.architecture)
 
         if not selected_model:
             raise ValueError('Architecture not supported')

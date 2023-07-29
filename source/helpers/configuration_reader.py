@@ -29,18 +29,18 @@ class NeuralNetworkConfiguration:
     def __init__(self, configuration_path: str) -> None:
         configuration = read_yaml_parameters(configuration_path).get('neural_network_model')
 
-        self.build_config = BuildModelConfiguration(build_config=configuration.get('build'))
+        self.architecture_config = ArchitectureConfiguration(architecture_config=configuration.get('build'))
         self.compile_config = CompileModelConfiguration(compile_config=configuration.get('compile'))
 
 
-class BuildModelConfiguration:
+class ArchitectureConfiguration:
 
-    def __init__(self, build_config: dict) -> None:
-        self.type = build_config.get('model_type')
-        self.input_shape = build_config.get('input_shape')
-        self.number_units = build_config.get('number_units')
-        self.activation_hidden_layers = build_config.get('activation_hidden_layers')
-        self.activation_output_layer = build_config.get('activation_output_layer')
+    def __init__(self, architecture_config: dict) -> None:
+        self.type = architecture_config.get('model_type')
+        self.input_shape = architecture_config.get('input_shape')
+        self.number_units = architecture_config.get('number_units')
+        self.activation_hidden_layers = architecture_config.get('activation_hidden_layers')
+        self.activation_output_layer = architecture_config.get('activation_output_layer')
 
 
 class CompileModelConfiguration:
