@@ -13,3 +13,19 @@ raw_dataset:
       - 'position_pendulum'
   saver:
     dataset_name: 'real_data_swing_up.parquet'
+
+neural_network_model:
+  build:
+    model_type: 'dense'
+    input_shape: 8
+    number_units: [8, 4, 2, 1]
+    activation_hidden_layers: 'tanh'
+    activation_output_layer: 'linear'
+  compile:
+    loss: 'mae'
+    metrics: ['mse']
+    optimizer: 'adam'
+    learning_rate: 0.001
+#  epochs: 100
+#  batch_size: 32
+#  verbose: 1
