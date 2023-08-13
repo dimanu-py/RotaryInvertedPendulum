@@ -31,8 +31,8 @@ def extract_extension(file_name: str) -> str:
 
 def load_configuration_data(func):
     @wraps(func)
-    def wrapper(self, folder_path, data_key):
-        configuration_data = read_yaml_parameters(folder_path)
+    def wrapper(self, data_key, *args, **kwargs):
+        configuration_data = read_yaml_parameters(*args, **kwargs)
         try:
             selected_data = configuration_data[data_key]
             return func(self, selected_data)
