@@ -41,7 +41,7 @@ class DatasetSaverConfiguration(ConfigurationComponent):
         self.dataset_name = configuration_data.get('dataset_name')
 
 
-class BuildModelConfiguration(ConfigurationComponent):
+class ArchitectureModelConfiguration(ConfigurationComponent):
     """Class to define a build model configuration component to build a neural network model"""
     def __init__(self, configuration_data: Dict[str, Any]) -> None:
         self.type = configuration_data.get('model_type')
@@ -80,10 +80,10 @@ class RawDatasetConfigurationBuilder(ConfigurationBuilder):
 
 class NeuralNetworkConfigurationBuilder(ConfigurationBuilder):
     """Class to define a neural network configuration builder"""
-    build_configuration: "ConfigurationComponent" = None
+    architecture_configuration: "ConfigurationComponent" = None
     compile_configuration: "ConfigurationComponent" = None
 
     def build(self, configuration_data: Dict[str, Any]) -> None:
         """Build a neural network configuration object with its corresponding configuration components"""
-        self.build_configuration = BuildModelConfiguration(configuration_data=configuration_data['build'])
+        self.architecture_configuration = ArchitectureModelConfiguration(configuration_data=configuration_data['architecture'])
         self.compile_configuration = CompileModelConfiguration(configuration_data=configuration_data['compile'])
