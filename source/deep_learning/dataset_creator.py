@@ -2,27 +2,33 @@ import pandas as pd
 
 from source.helpers.data_saver import SaveFile
 from source.helpers.matlab_files_controller import MatlabFilesController
-from source.helpers.configuration_reader import RawDatasetConfiguration
+from source.helpers.configuration_builder import Configuration
 
 
 class DatasetCreator:
     """
     Gather data from matlab files and save them into a file inside data/datasets folder
     """
-    def __init__(self, matlab_controller: MatlabFilesController, data_saver: SaveFile) -> None:
+    def __init__(self, matlab_controller: MatlabFilesController, data_saver: SaveFile, configuration: Configuration) -> None:
         self.matlab_controller = matlab_controller
         self.file_saver = data_saver
+        self.configuration = configuration
 
-    def create_dataset(self, configuration: RawDatasetConfiguration) -> None:
+    def create_dataset(self, parameters_path: str) -> None:
         """
         Main method. Gets data from matlab files and save them into a file.
         """
-        matlab_file = configuration.matlab_config.file_name
-        matlab_data_name = configuration.matlab_config.data
-        selected_columns = configuration.matlab_config.columns
+        # TODO: check strategy used to create raw_dataset_configuration -> I don't want to pass parameters_path as
+        #  argument from outside and don't want to hardcode raw_dataset key
+        raw_dataset_configuration = self.configuration.construct('raw_dataset', parameters_path, )
+        matlab_file = raw_dataset_configuration.matlab_configuration.file_name
+        matlab_data_name = raw_dataset_configuration.matlab_configuration.data
+        selected_columns = raw_dataset_configuration.matlab_configuration.columns
 
-        save_file_name = configuration.dataset_saver_config.dataset_name
+        save_file_name = raw_dataset_configuration.dataset_saver_configuration.dataset_name
 
+        # TODO: maybe is better to pass raw_dataset_configuration.matlab_configuration as argument instead of passing
+        #  each attribute separately
         matlab_data = self.get_data_from_matlab(data_file_name=matlab_file,
                                                 matlab_data_name=matlab_data_name,
                                                 selected_columns=selected_columns)

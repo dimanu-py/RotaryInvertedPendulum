@@ -1,4 +1,5 @@
 import yaml
+from functools import wraps
 
 
 def read_yaml_parameters(folder_path: str, yaml_file: str = None) -> dict:
@@ -26,3 +27,15 @@ def extract_extension(file_name: str) -> str:
     """
     extension = file_name.split('.')[-1]
     return extension
+
+
+def load_configuration_data(func):
+    @wraps(func)
+    def wrapper(self, data_key, *args, **kwargs):
+        configuration_data = read_yaml_parameters(*args, **kwargs)
+        try:
+            selected_data = configuration_data[data_key]
+            return func(self, selected_data)
+        except KeyError as error:
+            print(f'Impossible to find the key -> {error.args[0]}')
+    return wrapper
