@@ -30,6 +30,7 @@ class FurutaPendulum:
 
         model_creator.build_model(configuration=None)  # TODO: cambiar None por la configuration correspondiente
 
+
 if __name__ == '__main__':
     furuta_pendulum = FurutaPendulum()
     furuta_pendulum.create_dataset()
