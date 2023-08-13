@@ -20,7 +20,7 @@ class DatasetCreator:
         """
         # TODO: check strategy used to create raw_dataset_configuration -> I don't want to pass parameters_path as
         #  argument from outside and don't want to hardcode raw_dataset key
-        raw_dataset_configuration = self.configuration.construct(parameters_path, 'raw_dataset')
+        raw_dataset_configuration = self.configuration.construct('raw_dataset', parameters_path, )
         matlab_file = raw_dataset_configuration.matlab_configuration.file_name
         matlab_data_name = raw_dataset_configuration.matlab_configuration.data
         selected_columns = raw_dataset_configuration.matlab_configuration.columns

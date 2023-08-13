@@ -82,7 +82,7 @@ class DataSplitter:
 
 
 if __name__ == '__main__':
-    from source.workers.reader import DataReader
+    from source.deep_learning.reader import DataReader
     from source.helpers.data_loader import LoaderFactory
     from source.env_settings import EnvSettings
 
