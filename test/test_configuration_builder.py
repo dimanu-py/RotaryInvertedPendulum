@@ -93,3 +93,7 @@ def test_create_neural_network_configuration(yaml_test_file_data, data_key):
     assert isinstance(neural_network_configuration, Configuration)
     assert neural_network_configuration.architecture_configuration is not None
     assert neural_network_configuration.compile_configuration is not None
+
+
+if __name__ == '__main__':
+    pytest.main()
