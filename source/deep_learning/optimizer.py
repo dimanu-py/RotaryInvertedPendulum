@@ -11,6 +11,7 @@ class Optimizer:
         self.optimizer = self.create_optimizer()
 
     def create_optimizer(self) -> "Optimizer":
+        """Method to create the optimizer dynamically based on the configuration"""
         optimizer_type = self.configuration.optimizer_config.optimizer_type
         optimizer_classes = {'adam': AdamOptimizer,
                              'sgd': SGDOptimizer,
@@ -23,6 +24,7 @@ class Optimizer:
             print(f'Optimizer {optimizer_type} not implemented yet.')
 
     def get_optimizer(self) -> "Optimizer":
+        """Method to get the optimizer without accessing the optimizer attribute directly"""
         return self.optimizer
 
 

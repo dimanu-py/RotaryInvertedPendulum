@@ -11,6 +11,7 @@ class LossFunction:
         self.loss_function = self.create_loss_function()
 
     def create_loss_function(self) -> "LossFunction":
+        """Method to create the loss function dynamically based on the configuration"""
         loss_function_type = self.configuration.loss_function_config.loss
         loss_function_classes = {'mse': MeanSquaredError,
                                  'mae': MeanAbsoluteError,
@@ -23,6 +24,7 @@ class LossFunction:
             print(f'Loss function {loss_function_type} not implemented yet.')
 
     def get_loss_function(self) -> "LossFunction":
+        """Method to get the loss function without accessing the loss_function attribute directly"""
         return self.loss_function
 
 

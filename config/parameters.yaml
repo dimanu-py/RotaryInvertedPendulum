@@ -21,11 +21,12 @@ neural_network_model:
     number_units: [16, 8, 4, 1]
     activation_hidden_layers: 'relu'
     activation_output_layer: 'linear'
-  compile:
-    loss: 'mae'
-    metrics: ['mse']
-    optimizer: 'adam'
+  optimizer:
+    optimizer_type: 'adam'
     learning_rate: 0.001
+  loss: 'mae'
+  metrics:
+    - 'mse'
 #  epochs: 100
 #  batch_size: 32
 #  verbose: 1
