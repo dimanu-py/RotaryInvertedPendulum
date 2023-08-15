@@ -16,7 +16,7 @@ def mock_architecture_configuration():
 
 
 @pytest.fixture(scope='function')
-def mock_build_configuration(mock_architecture_configuration):
+def mock_configuration_object(mock_architecture_configuration):
     mock_configuration = Mock()
     mock_configuration.architecture_config.input_shape = mock_architecture_configuration['input_shape']
     mock_configuration.architecture_config.output_shape = mock_architecture_configuration['output_shape']
@@ -26,8 +26,8 @@ def mock_build_configuration(mock_architecture_configuration):
     return mock_configuration
 
 
-def test_create_architecture(mock_build_configuration):
-    model = FullyConnectedNetwork(mock_build_configuration)
+def test_create_architecture(mock_configuration_object):
+    model = FullyConnectedNetwork(mock_configuration_object)
     model.create_architecture()
 
     assert model is not None

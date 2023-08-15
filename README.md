@@ -15,7 +15,11 @@ To install quanser libraries run
     ```bash
     dvc remote add -d storage gdrive://id_of_your_gdrive_folder
     ```
-3. Get the data from the remote storage
+3. Install dvc library for google drive
+    ```bash
+    pip install dvc-gdrive
+    ```
+4. Get the data from the remote storage
     ```bash
     dvc pull
     ```
