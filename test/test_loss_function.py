@@ -1,10 +1,10 @@
 import pytest
 from unittest.mock import Mock
 
-from source.deep_learning.loss_function import (LossFunction,
-                                                MeanAbsoluteError,
-                                                MeanSquaredError,
-                                                MeanSquaredLogarithmicError)
+from workers.loss_function import (LossFunction,
+                                   MeanAbsoluteError,
+                                   MeanSquaredError,
+                                   MeanSquaredLogarithmicError)
 
 
 @pytest.fixture

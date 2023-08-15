@@ -1,13 +1,13 @@
 import pytest
 from unittest.mock import Mock
 
-from source.deep_learning.metrics import (MeanAbsoluteError,
-                                          MeanSquaredError,
-                                          RootMeanSquaredError,
-                                          MeanAbsolutePercentageError,
-                                          MeanSquaredLogarithmicError,
-                                          R2Score,
-                                          Metrics)
+from workers.metrics import (MeanAbsoluteError,
+                             MeanSquaredError,
+                             RootMeanSquaredError,
+                             MeanAbsolutePercentageError,
+                             MeanSquaredLogarithmicError,
+                             R2Score,
+                             Metrics)
 
 
 @pytest.fixture

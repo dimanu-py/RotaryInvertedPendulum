@@ -1,10 +1,10 @@
 import pytest
 from unittest.mock import Mock
 
-from source.deep_learning.optimizer import (AdamOptimizer,
-                                            SGDOptimizer,
-                                            RMSPropOptimizer,
-                                            Optimizer)
+from workers.optimizer import (AdamOptimizer,
+                               SGDOptimizer,
+                               RMSPropOptimizer,
+                               Optimizer)
 
 
 @pytest.fixture
