@@ -1,14 +1,29 @@
 from abc import ABC, abstractmethod
 from typing import Dict, Any
+from functools import wraps
 
-from source.furuta_utils import load_configuration_data
+from source.furuta_utils import read_yaml_parameters
 
 
 class Configuration:
     """Client class to construct a configuration object"""
+    PARAMS_PATH = "../config"  # this path shouldn't change, is not configurable
+
     def __init__(self, builder: "ConfigurationBuilder"):
         self._builder = builder
         self.config = None
+
+    def load_configuration_data(func):
+        @wraps(func)
+        def wrapper(self, data_key, *args, **kwargs):
+            configuration_data = read_yaml_parameters(self.PARAMS_PATH, *args, **kwargs)
+            try:
+                selected_data = configuration_data[data_key]
+                return func(self, selected_data)
+            except KeyError as error:
+                print(f'Impossible to find the key -> {error.args[0]}')
+
+        return wrapper
 
     @load_configuration_data
     def construct(self, configuration_data: Dict[str, Any]) -> "Configuration":
