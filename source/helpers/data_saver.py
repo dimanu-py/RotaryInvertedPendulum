@@ -30,9 +30,6 @@ class SaveParquet(SaveFile):
     """
     Concrete class to save data into a parquet file.
     """
-    def __init__(self, folder_path: str) -> None:
-        super().__init__(folder_path=folder_path)
-
     def save_file(self, dataframe: pd.DataFrame, save_file_name: str) -> None:
         """
         Save a dataframe with parquet extension.
@@ -46,10 +43,10 @@ class SaveParquet(SaveFile):
         except Exception as e:
             print(f'Error saving data as parquet {e.args[1]}')
 
-    def build_save_path(self, save_file_name):
+    def build_save_path(self, save_file_name: str) -> str:
         """
         Build the full path to save the file.
         """
         self.check_folder_exists()
-        full_path = f'{self.folder_path}\\{save_file_name}.parquet'
+        full_path = f'{self.folder_path}/{save_file_name}.parquet'
         return full_path
