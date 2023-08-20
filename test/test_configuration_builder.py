@@ -42,31 +42,35 @@ def mock_configuration_neural_network():
             'activation_hidden_layers': 'relu',
             'activation_output_layer': 'linear'
         },
-        'compile': {
-            'loss': 'mse',
-            'metrics': ['mae', 'mse'],
-            'optimizer': 'adam',
+        'optimizer': {
+            'optimizer_type': 'adam',
             'learning_rate': 0.001
-        }
+        },
+        'loss': 'mse',
+        'metrics': ['mae', 'mse']
     }
 
 
 def test_raw_dataset_configuration_builder(mock_configuration_raw_dataset):
     builder = RawDatasetConfigurationBuilder()
-    builder.build(configuration_data=mock_configuration_raw_dataset)
+    raw_dataset_configuration = builder.build(configuration_data=mock_configuration_raw_dataset)
 
     assert isinstance(builder, RawDatasetConfigurationBuilder)
-    assert builder.matlab_configuration is not None
-    assert builder.dataset_saver_configuration is not None
+    assert isinstance(raw_dataset_configuration, RawDatasetConfigurationBuilder)
+    assert raw_dataset_configuration.matlab_config is not None
+    assert raw_dataset_configuration.dataset_saver_config is not None
 
 
 def test_neural_network_configuration_builder(mock_configuration_neural_network):
     builder = NeuralNetworkConfigurationBuilder()
-    builder.build(configuration_data=mock_configuration_neural_network)
+    neural_network_configuration = builder.build(configuration_data=mock_configuration_neural_network)
 
     assert isinstance(builder, NeuralNetworkConfigurationBuilder)
-    assert builder.architecture_configuration is not None
-    assert builder.compile_configuration is not None
+    assert isinstance(neural_network_configuration, NeuralNetworkConfigurationBuilder)
+    assert neural_network_configuration.architecture_config is not None
+    assert neural_network_configuration.optimizer_config is not None
+    assert neural_network_configuration.loss_config is not None
+    assert neural_network_configuration.metrics_config is not None
 
 
 @pytest.mark.parametrize("data_key", ["raw_dataset"])
@@ -78,8 +82,8 @@ def test_create_raw_dataset_configuration(yaml_test_file_data, data_key):
                                                         yaml_file=yaml_test_file_data[1])
 
     assert isinstance(raw_dataset_configuration, Configuration)
-    assert raw_dataset_configuration.matlab_configuration is not None
-    assert raw_dataset_configuration.dataset_saver_configuration is not None
+    assert raw_dataset_configuration.matlab_config is not None
+    assert raw_dataset_configuration.dataset_saver_config is not None
 
 
 @pytest.mark.parametrize("data_key", ["neural_network_model"])
@@ -91,8 +95,10 @@ def test_create_neural_network_configuration(yaml_test_file_data, data_key):
                                                            yaml_file=yaml_test_file_data[1])
 
     assert isinstance(neural_network_configuration, Configuration)
-    assert neural_network_configuration.architecture_configuration is not None
-    assert neural_network_configuration.compile_configuration is not None
+    assert neural_network_configuration.architecture_config is not None
+    assert neural_network_configuration.optimizer_config is not None
+    assert neural_network_configuration.loss_config is not None
+    assert neural_network_configuration.metrics_config is not None
 
 
 if __name__ == '__main__':

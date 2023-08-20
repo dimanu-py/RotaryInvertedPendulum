@@ -1,6 +1,7 @@
 raw_dataset:
   matlab:
-    file_name: 'real_data_swing_up.mat'
+    file_name: 'synthetic_data_stabilization_disturbance_2.mat'
+    source: 'synthetic'
     data: 'data'
     columns:
       - 'time'
@@ -12,7 +13,7 @@ raw_dataset:
       - 'speed_pendulum'
       - 'position_pendulum'
   saver:
-    dataset_name: 'real_data_swing_up.parquet'
+    dataset_name: 'synthetic_data_stabilization_disturbance_2.parquet'
 
 neural_network_model:
   architecture:
@@ -22,11 +23,14 @@ neural_network_model:
     activation_hidden_layers: 'relu'
     activation_output_layer: 'linear'
   optimizer:
-    optimizer_type: 'adam'
-    learning_rate: 0.001
-  loss: 'mae'
+    optimizer_type: 'sgd'
+    learning_rate: 0.01
+  loss:
+    - 'mse'
   metrics:
     - 'mse'
+    - 'mae'
+    - 'r2'
 #  epochs: 100
 #  batch_size: 32
 #  verbose: 1
