@@ -1,33 +1,26 @@
 from source.deep_learning.dataset_creator import DatasetCreator
-from source.env_settings import EnvSettings
+from source.deep_learning.dl_model_creator import FullyConnectedNetwork
 from source.helpers.configuration_builder import (Configuration,
                                                   RawDatasetConfigurationBuilder,
                                                   NeuralNetworkConfigurationBuilder)
 from source.helpers.data_saver import SaveParquet
-from source.helpers.matlab_files_controller import MatlabFilesController
-from source.deep_learning.dl_model_creator import FullyConnectedNetwork
-
-env_vars = EnvSettings.get_env_vars()
-
-MATLAB_PATH = env_vars.MATLAB_PATH
-DATASETS_PATH = env_vars.DATASETS_PATH
-PARAMETERS_PATH = env_vars.PARAMS_PATH
+from source.helpers.matlab_data_converter import MatlabDataConverter
 
 
 class FurutaPendulum:
 
     def __init__(self):
-        self.matlab_controller = MatlabFilesController(matlab_folder=MATLAB_PATH)
-        self.dataset_saver = SaveParquet(folder_path=DATASETS_PATH)
+        self.matlab_converter = MatlabDataConverter()
+        self.dataset_saver = SaveParquet()
         self.raw_dataset_configuration = Configuration(builder=RawDatasetConfigurationBuilder())
         self.neural_network_configuration = Configuration(builder=NeuralNetworkConfigurationBuilder())
 
     def create_dataset(self):
-        dataset_creator = DatasetCreator(matlab_controller=self.matlab_controller,
-                                         data_saver=self.dataset_saver,
+        dataset_creator = DatasetCreator(matlab_converter=self.matlab_converter,
                                          configuration=self.raw_dataset_configuration)
 
-        dataset_creator.create_dataset(parameters_path=PARAMETERS_PATH)
+        dataset = dataset_creator.create_dataset()
+        return dataset
 
     def create_model(self):
         model = FullyConnectedNetwork(configuration=self.neural_network_configuration)
@@ -35,6 +28,10 @@ class FurutaPendulum:
 
 
 if __name__ == '__main__':
+    import time
+    start_time = time.time()
     furuta_pendulum = FurutaPendulum()
-    furuta_pendulum.create_dataset()
+    stop_time = time.time() - start_time
+    print(f"Time elapsed: {stop_time}")
+    training_data = furuta_pendulum.create_dataset()
     furuta_pendulum.create_model()

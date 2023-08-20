@@ -1,6 +1,6 @@
 raw_dataset:
   matlab:
-    file_name: 'synthetic_data_stabilization_disturbance_2.mat'
+    file_name: 'stabilization_disturbance_5.mat'
     source: 'synthetic'
     data: 'data'
     columns:

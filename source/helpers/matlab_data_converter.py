@@ -1,19 +1,16 @@
 import hdf5storage
 import pandas as pd
 
-from typing import List, Any, Dict
+from typing import List, Dict
 
 
-# TODO: evaluate if makes sense to read env vars here and not pass it as argument creating the object
 class MatlabDataConverter:
     """
     Class to read data from a matlab file.
-    The location of the file is outside the project folder.
     """
-    def __init__(self, matlab_folder: str) -> None:
-        self.matlab_folder_path = matlab_folder
+    MATLAB_FOLDER = "../data/matlab"
 
-    def transform_matlab_to_dataframe(self, data_file_name: str, mat_data_name: str, data_source: str, columns_name: List[str, Any]) -> pd.DataFrame:
+    def transform_matlab_to_dataframe(self, data_file_name: str, mat_data_name: str, data_source: str, columns_name: List[str]) -> pd.DataFrame:
         """
         Stores data from matlab file as a dataframe.
         """
@@ -35,7 +32,7 @@ class MatlabDataConverter:
         Read matlab file with array structure.
         """
         try:
-            matlab_file_path = f'{self.matlab_folder_path}/{mat_data_source}/{mat_file_name}'
+            matlab_file_path = f'{self.MATLAB_FOLDER}/{mat_data_source}/{mat_file_name}'
             matlab_data = hdf5storage.loadmat(file_name=matlab_file_path)
             return matlab_data
 
