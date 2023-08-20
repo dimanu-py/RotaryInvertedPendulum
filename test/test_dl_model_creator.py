@@ -1,4 +1,4 @@
-from deep_learning.dl_model_creator import FullyConnectedNetwork
+from deep_learning.model_creator import FullyConnectedNetwork
 
 import pytest
 from unittest.mock import Mock
