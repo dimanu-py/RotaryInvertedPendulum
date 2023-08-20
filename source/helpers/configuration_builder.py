@@ -1,23 +1,38 @@
 from abc import ABC, abstractmethod
 from typing import Dict, Any
+from functools import wraps
 
-from source.furuta_utils import load_configuration_data
+from source.furuta_utils import read_yaml_parameters
 
 
 class Configuration:
     """Client class to construct a configuration object"""
+    PARAMS_PATH = "../config"  # this path shouldn't change, is not configurable
+
     def __init__(self, builder: "ConfigurationBuilder"):
         self._builder = builder
+        self.config = None
+
+    def load_configuration_data(func):
+        @wraps(func)
+        def wrapper(self, data_key, *args, **kwargs):
+            configuration_data = read_yaml_parameters(self.PARAMS_PATH, *args, **kwargs)
+            try:
+                selected_data = configuration_data[data_key]
+                return func(self, selected_data)
+            except KeyError as error:
+                print(f'Impossible to find the key -> {error.args[0]}')
+
+        return wrapper
 
     @load_configuration_data
     def construct(self, configuration_data: Dict[str, Any]) -> "Configuration":
         """"Construct a configuration object with its corresponding configuration components"""
-        self._builder.build(configuration_data)
+        self.config = self._builder.build(configuration_data)
         return self
 
     def __getattr__(self, item):
-        """Method to get configuration component attribute from builder with dot notation"""
-        return getattr(self._builder, item)
+        return getattr(self.config, item)
 
 
 class ConfigurationComponent(ABC):
@@ -31,6 +46,7 @@ class MatlabConfiguration(ConfigurationComponent):
     """Class to define a matlab configuration component to get data from matlab files"""
     def __init__(self, configuration_data: Dict[str, Any]) -> None:
         self.file_name = configuration_data.get('file_name')
+        self.source = configuration_data.get('source')
         self.data = configuration_data.get('data')
         self.columns = configuration_data.get('columns')
 
@@ -51,13 +67,23 @@ class ArchitectureModelConfiguration(ConfigurationComponent):
         self.activation_output_layer = configuration_data.get('activation_output_layer')
 
 
-class CompileModelConfiguration(ConfigurationComponent):
-    """Class to define a compile model configuration component to compile a neural network model"""
+class OptimizerConfiguration(ConfigurationComponent):
+    """Class to define a optimizer configuration component to optimize a neural network model"""
     def __init__(self, configuration_data: Dict[str, Any]) -> None:
-        self.loss = configuration_data.get('loss')
-        self.metrics = configuration_data.get('metrics')
-        self.optimizer = configuration_data.get('optimizer')
+        self.optimizer_type = configuration_data.get('optimizer_type')
         self.learning_rate = configuration_data.get('learning_rate')
+
+
+class LossConfiguration(ConfigurationComponent):
+    """Class to define a loss configuration component to define a loss function for a neural network model"""
+    def __init__(self, configuration_data: Dict[str, Any]) -> None:
+        self.loss = configuration_data
+
+
+class MetricsConfiguration(ConfigurationComponent):
+    """Class to define a metrics configuration component to define a metrics for a neural network model"""
+    def __init__(self, configuration_data: Dict[str, Any]) -> None:
+        self.metrics = configuration_data
 
 
 class ConfigurationBuilder(ABC):
@@ -69,21 +95,27 @@ class ConfigurationBuilder(ABC):
 
 class RawDatasetConfigurationBuilder(ConfigurationBuilder):
     """Class to define a raw dataset configuration builder"""
-    matlab_configuration: "ConfigurationComponent" = None
-    dataset_saver_configuration: "ConfigurationComponent" = None
+    matlab_config: "ConfigurationComponent" = None
+    dataset_saver_config: "ConfigurationComponent" = None
 
-    def build(self, configuration_data: Dict[str, Any]) -> None:
+    def build(self, configuration_data: Dict[str, Any]) -> "RawDatasetConfigurationBuilder":
         """Build a raw dataset configuration object with its corresponding configuration components"""
-        self.matlab_configuration = MatlabConfiguration(configuration_data=configuration_data['matlab'])
-        self.dataset_saver_configuration = DatasetSaverConfiguration(configuration_data=configuration_data['saver'])
+        self.matlab_config = MatlabConfiguration(configuration_data=configuration_data['matlab'])
+        self.dataset_saver_config = DatasetSaverConfiguration(configuration_data=configuration_data['saver'])
+        return self
 
 
 class NeuralNetworkConfigurationBuilder(ConfigurationBuilder):
     """Class to define a neural network configuration builder"""
-    architecture_configuration: "ConfigurationComponent" = None
-    compile_configuration: "ConfigurationComponent" = None
+    architecture_config: "ConfigurationComponent" = None
+    optimizer_config: "ConfigurationComponent" = None
+    loss_config: "ConfigurationComponent" = None
+    metrics_config: "ConfigurationComponent" = None
 
-    def build(self, configuration_data: Dict[str, Any]) -> None:
+    def build(self, configuration_data: Dict[str, Any]) -> "NeuralNetworkConfigurationBuilder":
         """Build a neural network configuration object with its corresponding configuration components"""
-        self.architecture_configuration = ArchitectureModelConfiguration(configuration_data=configuration_data['architecture'])
-        self.compile_configuration = CompileModelConfiguration(configuration_data=configuration_data['compile'])
+        self.architecture_config = ArchitectureModelConfiguration(configuration_data=configuration_data['architecture'])
+        self.optimizer_config = OptimizerConfiguration(configuration_data=configuration_data['optimizer'])
+        self.loss_config = LossConfiguration(configuration_data=configuration_data['loss'])
+        self.metrics_config = MetricsConfiguration(configuration_data=configuration_data['metrics'])
+        return self

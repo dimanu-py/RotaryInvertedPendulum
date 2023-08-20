@@ -17,7 +17,7 @@ def yaml_file_name():
     """
     Fixture to configure the name of the yaml used it to tests
     """
-    return 'read_parameter_yaml_test.yaml'
+    return 'test_parameters.yaml'
 
 
 def test_read_yaml_parameters(folder_path, yaml_file_name):
@@ -40,3 +40,8 @@ def test_extract_extension(yaml_file_name):
     assert extension is not None
     assert isinstance(extension, str)
     assert extension == 'yaml'
+
+
+if __name__ == '__main__':
+    pytest.main()
+    
