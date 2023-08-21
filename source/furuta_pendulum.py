@@ -1,4 +1,5 @@
 from source.deep_learning.dataset_creator import DatasetCreator
+from source.deep_learning.model_creator import DLModel
 from source.helpers.configuration_builder import (Configuration,
                                                   RawDatasetConfigurationBuilder,
                                                   NeuralNetworkConfigurationBuilder)
@@ -25,6 +26,11 @@ class FurutaPendulum(DesignSystem):
         return dataset
 
     def create_model(self):
+        self.model = DLModel(configuration=self.neural_network_configuration)
+        self.model.create_model_architecture()
+        self.model.compile_model()
+
+    def set_callbacks(self):
         pass
 
     def training(self):

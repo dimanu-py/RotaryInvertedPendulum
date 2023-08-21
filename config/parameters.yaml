@@ -15,7 +15,7 @@ raw_dataset:
   saver:
     dataset_name: 'synthetic_data_stabilization_disturbance_2.parquet'
 
-neural_network_model:
+model:
   architecture:
     model_type: 'fully_connected'
     input_shape: 6
@@ -31,6 +31,7 @@ neural_network_model:
     - 'mse'
     - 'mae'
     - 'r2'
-#  epochs: 100
-#  batch_size: 32
-#  verbose: 1
+training:
+  epochs: 100
+  batch_size: 32
+  verbose: 1
