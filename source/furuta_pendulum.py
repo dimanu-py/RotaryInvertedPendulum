@@ -4,11 +4,14 @@ from source.helpers.configuration_builder import (Configuration,
                                                   NeuralNetworkConfigurationBuilder)
 from source.helpers.data_saver import SaveParquet
 from source.helpers.matlab_data_converter import MatlabDataConverter
+from source.workers.design_system import DesignSystem
 
 
-class FurutaPendulum:
+class FurutaPendulum(DesignSystem):
 
     def __init__(self):
+        self.model = None
+
         self.matlab_converter = MatlabDataConverter()
         self.dataset_saver = SaveParquet()
         self.raw_dataset_configuration = Configuration(builder=RawDatasetConfigurationBuilder())
@@ -22,6 +25,15 @@ class FurutaPendulum:
         return dataset
 
     def create_model(self):
+        pass
+
+    def training(self):
+        pass
+
+    def evaluate(self):
+        pass
+
+    def predict(self):
         pass
 
 
