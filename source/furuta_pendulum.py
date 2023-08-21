@@ -24,32 +24,13 @@ class FurutaPendulum(DesignSystem):
         dataset = dataset_creator.create_dataset()
         return dataset
 
-    def create_model_architecture(self):
-        architect = Architecture(configuration=self.neural_network_configuration)
-
-        self.model = architect.create_architecture()
-
-    def compile_model(self):
-        optimizer = Optimizer(configuration=self.neural_network_configuration)
-        loss_function = LossFunction(configuration=self.neural_network_configuration)
-        metrics = Metrics(configuration=self.neural_network_configuration)
-
-        compiler = Compiler(model=self.model,
-                            optimizer=optimizer,
-                            loss_function=loss_function,
-                            metrics=metrics)
-        compiler.compile()
-
-    def set_callbacks(self):
+    def create_model(self):
         pass
 
-    def split_datasets(self):
+    def training(self):
         pass
 
-    def train_model(self):
-        pass
-
-    def evaluate_model(self):
+    def evaluate(self):
         pass
 
     def predict(self):
@@ -59,4 +40,4 @@ class FurutaPendulum(DesignSystem):
 if __name__ == '__main__':
     furuta_pendulum = FurutaPendulum()
     training_data = furuta_pendulum.create_dataset()
-    furuta_pendulum.create_model_architecture()
+    furuta_pendulum.create_model()

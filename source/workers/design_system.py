@@ -8,27 +8,15 @@ class DesignSystem(ABC):
         pass
 
     @abstractmethod
-    def create_model_architecture(self):
+    def create_model(self):
         pass
 
     @abstractmethod
-    def compile_model(self):
+    def training(self):
         pass
 
     @abstractmethod
-    def set_callbacks(self):
-        pass
-
-    @abstractmethod
-    def split_datasets(self):
-        pass
-
-    @abstractmethod
-    def train_model(self):
-        pass
-
-    @abstractmethod
-    def evaluate_model(self):
+    def evaluate(self):
         pass
 
     @abstractmethod
