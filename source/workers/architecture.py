@@ -1,7 +1,7 @@
 from abc import abstractmethod, ABC
 
-from tensorflow.keras import Sequential
-from tensorflow.keras.layers import Dense, Input
+from keras import Sequential
+from keras.layers import Dense, Input
 
 from source.helpers.configuration_builder import Configuration
 
@@ -14,15 +14,12 @@ class Architecture(ABC):
 
 
 class FullyConnectedNetwork(Architecture):
-    CONFIG_KEY = 'neural_network_model'
 
     def __init__(self, configuration: "Configuration") -> None:
         self.model = None
-        # TODO: manage to get directly architecture_config and not access it via neural_network_model
-        self.configuration = configuration.construct(data_key=self.CONFIG_KEY).architecture_config
+        self.configuration = configuration
 
     def create_architecture(self) -> "Architecture":
-
         self.model = Sequential()
 
         self.model.add(Input(shape=(self.configuration.input_shape, )))
