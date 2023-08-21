@@ -1,24 +1,25 @@
-import tensorflow as tf
 from abc import abstractmethod, ABC
+
+from keras.optimizers import (Adam,
+                              SGD,
+                              RMSprop)
 
 from source.helpers.configuration_builder import Configuration
 
 
 class OptimizerFactory:
     """Class to encapsulate the optimizer"""
-    def __init__(self, configuration: "Configuration") -> None:
-        self.configuration = configuration
-
-    def get_optimizer(self) -> "Optimizer":
+    @staticmethod
+    def get_optimizer(configuration: "Configuration") -> "Optimizer":
         """Method to create the optimizer dynamically based on the configuration"""
-        optimizer_type = self.configuration.optimizer_config.optimizer_type
+        optimizer_type = configuration.optimizer_type
         optimizer_classes = {'adam': AdamOptimizer,
                              'sgd': SGDOptimizer,
                              'rmsprop': RMSPropOptimizer}
 
         try:
-            optimizer = optimizer_classes[optimizer_type](configuration=self.configuration)
-            return optimizer
+            optimizer = optimizer_classes[optimizer_type](configuration=configuration)
+            return optimizer.optimizer
         except KeyError:
             print(f'Optimizer {optimizer_type} not implemented yet.')
 
@@ -35,22 +36,22 @@ class Optimizer(ABC):
         pass
 
 
-class AdamOptimizer(OptimizerFactory):
+class AdamOptimizer(Optimizer):
     """Class to encapsulate the configuration of the Adam optimizer"""
     def configure_optimizer(self):
         learning_rate = self.configuration.learning_rate
-        return tf.keras.optimizers.Adam(learning_rate=learning_rate)
+        return Adam(learning_rate=learning_rate)
 
 
-class SGDOptimizer(OptimizerFactory):
+class SGDOptimizer(Optimizer):
     """Class to encapsulate the configuration of the SGD optimizer"""
     def configure_optimizer(self):
-        learning_rate = self.configuration.optimizer_config.learning_rate
-        return tf.keras.optimizers.SGD(learning_rate=learning_rate)
+        learning_rate = self.configuration.learning_rate
+        return SGD(learning_rate=learning_rate)
 
 
-class RMSPropOptimizer(OptimizerFactory):
+class RMSPropOptimizer(Optimizer):
     """Class to encapsulate the configuration of the RMSProp optimizer"""
     def configure_optimizer(self):
-        learning_rate = self.configuration.optimizer_config.learning_rate
-        return tf.keras.optimizers.RMSprop(learning_rate=learning_rate)
+        learning_rate = self.configuration.learning_rate
+        return RMSprop(learning_rate=learning_rate)
