@@ -13,7 +13,8 @@ raw_dataset:
       - 'speed_pendulum'
       - 'position_pendulum'
   saver:
-    dataset_name: 'synthetic_data_stabilization_disturbance_2.parquet'
+    dataset_name: 'synthetic_data_stabilization_disturbance_2'
+    folder_to_save: 'datasets'
 
 model:
   architecture:

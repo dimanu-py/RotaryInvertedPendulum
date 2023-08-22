@@ -55,6 +55,7 @@ class DatasetSaverConfiguration(ConfigurationComponent):
     """Class to define a dataset saver configuration component to save data into a file"""
     def __init__(self, configuration_data: Dict[str, Any]) -> None:
         self.dataset_name = configuration_data.get('dataset_name')
+        self.folder_to_save = configuration_data.get('folder_to_save')
 
 
 class ArchitectureModelConfiguration(ConfigurationComponent):
