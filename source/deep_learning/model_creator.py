@@ -25,7 +25,6 @@ class DLModel(AIModel):
         self.model = None
 
     def create_model_architecture(self):
-        # TODO: makes sense to create architect of type FullyConnectedNetwork and then getting model as a FullyConnectedNetwork too?
         architect = FullyConnectedNetwork(configuration=self.configuration.architecture_config)
         self.model = architect.create_architecture()
 
@@ -35,5 +34,5 @@ class DLModel(AIModel):
         metrics = MetricsFactory.get_metrics(configuration=self.configuration.metrics_config)
 
         self.model.compile(optimizer=optimizer,
-                           loss_function=loss_function,
+                           loss=loss_function,
                            metrics=metrics)
