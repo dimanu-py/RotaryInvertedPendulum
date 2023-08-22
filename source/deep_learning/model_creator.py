@@ -25,6 +25,7 @@ class DLModel(AIModel):
         self.model = None
 
     def create_model_architecture(self):
+        # TODO: makes sense to create architect of type FullyConnectedNetwork and then getting model as a FullyConnectedNetwork too?
         architect = FullyConnectedNetwork(configuration=self.configuration.architecture_config)
         self.model = architect.create_architecture()
 

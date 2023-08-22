@@ -12,9 +12,9 @@ class LossFunctionFactory:
     def get_loss_function(configuration) -> "LossFunction":
         """Method to create the loss function dynamically based on the configuration"""
         loss_function_type, = configuration.loss
-        loss_function_classes = {'mse': MSE,
-                                 'mae': MAE,
-                                 'msle': MSLE}
+        loss_function_classes = {'mse': MeanSquaredErrorLossFunction,
+                                 'mae': MeanAbsoluteErrorLossFunction,
+                                 'msle': MeanSquaredLogarithmicErrorLossFunction}
 
         try:
             loss_function = loss_function_classes[loss_function_type](configuration=configuration)
@@ -35,19 +35,19 @@ class LossFunction(ABC):
         pass
 
 
-class MSE(LossFunction):
+class MeanSquaredErrorLossFunction(LossFunction):
     """Class to encapsulate the configuration of the mean squared error loss function"""
     def configure_loss_function(self):
         return MeanSquaredError()
 
 
-class MAE(LossFunction):
+class MeanAbsoluteErrorLossFunction(LossFunction):
     """Class to encapsulate the configuration of the mean absolute error loss function"""
     def configure_loss_function(self):
         return MeanAbsoluteError()
 
 
-class MSLE(LossFunction):
+class MeanSquaredLogarithmicErrorLossFunction(LossFunction):
     """Class to encapsulate the configuration of the mean squared logarithmic error loss function"""
     def configure_loss_function(self):
         return MeanSquaredLogarithmicError()

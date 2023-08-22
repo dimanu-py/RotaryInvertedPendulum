@@ -16,12 +16,12 @@ class MetricsFactory:
     def get_metrics(configuration: "Configuration") -> List["Metrics"]:
         """Method to create the metrics dynamically based on the configuration"""
         metrics_type = configuration.metrics
-        metrics_classes = {'mae': MAE,
-                           'mse': MSE,
-                           'rmse': RMSE,
-                           'mape': MAPE,
-                           'msle': MSLE,
-                           'r2': R2,
+        metrics_classes = {'mae': MeanAbsoluteErrorMetric,
+                           'mse': MeanSquaredErrorMetric,
+                           'rmse': RootMeanSquaredErrorMetric,
+                           'mape': MeanAbsolutePercentageErrorMetric,
+                           'msle': MeanSquaredLogarithmicErrorMetric,
+                           'r2': R2Metric,
                            }
 
         try:
@@ -42,37 +42,37 @@ class Metrics(ABC):
         pass
 
 
-class MAE(Metrics):
+class MeanAbsoluteErrorMetric(Metrics):
     """Class to encapsulate the configuration of the Mean Absolute Error metric"""
     def configure_metrics(self):
         return MeanAbsoluteError()
 
 
-class MSE(Metrics):
+class MeanSquaredErrorMetric(Metrics):
     """Class to encapsulate the configuration of the Mean Squared Error metric"""
     def configure_metrics(self):
         return MeanSquaredError()
 
 
-class RMSE(Metrics):
+class RootMeanSquaredErrorMetric(Metrics):
     """Class to encapsulate the configuration of the Root Mean Squared Error metric"""
     def configure_metrics(self):
         return RootMeanSquaredError()
 
 
-class MAPE(Metrics):
+class MeanAbsolutePercentageErrorMetric(Metrics):
     """Class to encapsulate the configuration of the Mean Absolute Percentage Error metric"""
     def configure_metrics(self):
         return MeanAbsolutePercentageError()
 
 
-class MSLE(Metrics):
+class MeanSquaredLogarithmicErrorMetric(Metrics):
     """Class to encapsulate the configuration of the Mean Squared Logarithmic Error metric"""
     def configure_metrics(self):
         return MeanSquaredLogarithmicError()
 
 
-class R2(Metrics):
-    """Class to encapsulate the configuration of the R2 Score metric"""
+class R2Metric(Metrics):
+    """Class to encapsulate the configuration of the R2Metric Score metric"""
     def configure_metrics(self):
         return R2Score()

@@ -1,13 +1,12 @@
 import pytest
 from unittest.mock import Mock
 
-from workers.metrics import (MeanAbsoluteError,
-                             MeanSquaredError,
-                             RootMeanSquaredError,
-                             MeanAbsolutePercentageError,
-                             MeanSquaredLogarithmicError,
-                             R2Score,
-                             Metrics)
+from workers.metrics import (MeanAbsoluteErrorMetric,
+                             MeanSquaredErrorMetric,
+                             RootMeanSquaredErrorMetric,
+                             MeanAbsolutePercentageErrorMetric,
+                             MeanSquaredLogarithmicErrorMetric,
+                             R2Metric)
 
 
 @pytest.fixture
@@ -20,49 +19,41 @@ def mock_metrics_configuration():
 @pytest.fixture(scope='function')
 def mock_configuration_object(mock_metrics_configuration):
     mock_configuration = Mock()
-    mock_configuration.metrics_config.metrics = mock_metrics_configuration['metrics']
+    mock_configuration.metrics = mock_metrics_configuration['metrics']
     return mock_configuration
 
 
 def test_mean_absolute_error(mock_configuration_object):
-    metrics = MeanAbsoluteError(mock_configuration_object)
+    metrics = MeanAbsoluteErrorMetric(mock_configuration_object)
     assert metrics is not None
-    assert isinstance(metrics, MeanAbsoluteError)
+    assert isinstance(metrics, MeanAbsoluteErrorMetric)
 
 
 def test_mean_squared_error(mock_configuration_object):
-    metrics = MeanSquaredError(mock_configuration_object)
+    metrics = MeanSquaredErrorMetric(mock_configuration_object)
     assert metrics is not None
-    assert isinstance(metrics, MeanSquaredError)
+    assert isinstance(metrics, MeanSquaredErrorMetric)
 
 
 def test_root_mean_squared_error(mock_configuration_object):
-    metrics = RootMeanSquaredError(mock_configuration_object)
+    metrics = RootMeanSquaredErrorMetric(mock_configuration_object)
     assert metrics is not None
-    assert isinstance(metrics, RootMeanSquaredError)
+    assert isinstance(metrics, RootMeanSquaredErrorMetric)
 
 
 def test_mean_absolute_percentage_error(mock_configuration_object):
-    metrics = MeanAbsolutePercentageError(mock_configuration_object)
+    metrics = MeanAbsolutePercentageErrorMetric(mock_configuration_object)
     assert metrics is not None
-    assert isinstance(metrics, MeanAbsolutePercentageError)
+    assert isinstance(metrics, MeanAbsolutePercentageErrorMetric)
 
 
 def test_mean_squared_logarithmic_error(mock_configuration_object):
-    metrics = MeanSquaredLogarithmicError(mock_configuration_object)
+    metrics = MeanSquaredLogarithmicErrorMetric(mock_configuration_object)
     assert metrics is not None
-    assert isinstance(metrics, MeanSquaredLogarithmicError)
+    assert isinstance(metrics, MeanSquaredLogarithmicErrorMetric)
 
 
 def test_r2_score(mock_configuration_object):
-    metrics = R2Score(mock_configuration_object)
+    metrics = R2Metric(mock_configuration_object)
     assert metrics is not None
-    assert isinstance(metrics, R2Score)
-
-
-def test_metrics(mock_configuration_object):
-    metrics = Metrics(mock_configuration_object)
-    assert metrics is not None
-    assert isinstance(metrics, Metrics)
-    assert metrics.get_metrics() is not None
-    assert len(metrics.get_metrics()) == len(mock_configuration_object.metrics_config.metrics)
+    assert isinstance(metrics, R2Metric)

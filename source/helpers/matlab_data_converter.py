@@ -32,6 +32,7 @@ class MatlabDataConverter:
         Read matlab file with array structure.
         """
         try:
+            # TODO: find better way to create paths
             matlab_file_path = f'{self.MATLAB_FOLDER}/{mat_data_source}/{mat_file_name}'
             matlab_data = hdf5storage.loadmat(file_name=matlab_file_path)
             return matlab_data
