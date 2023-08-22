@@ -1,4 +1,4 @@
-data:
+raw_dataset:
   matlab:
     file_name: 'stabilization_disturbance_5.mat'
     source: 'synthetic'
