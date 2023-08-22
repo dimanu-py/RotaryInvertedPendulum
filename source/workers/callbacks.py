@@ -1,5 +1,24 @@
 import tensorflow as tf
 from abc import ABC, abstractmethod
+from source.helpers.configuration_builder import Configuration
+from typing import List
+
+
+class CallbacksFactory:
+
+    @staticmethod
+    def get_callbacks(configuration: "Configuration") -> List["Callbacks"]:
+        callbacks_type = configuration.callbacks
+        callbacks_classes = {'early_stopping': EarlyStopping,
+                             'model_checkpoint': Checkpoint,
+                             'reduce_lr': ReduceLearningRate,
+                             'tensor_board': TensorBoard}
+
+        try:
+            callbacks = [callbacks_classes[callback](configuration) for callback in callbacks_type]
+            return [callback.callbacks for callback in callbacks]
+        except KeyError:
+            print(f'Callback {callbacks_type} not implemented yet')
 
 
 class Callbacks(ABC):
