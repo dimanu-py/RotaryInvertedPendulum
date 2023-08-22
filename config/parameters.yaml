@@ -17,7 +17,7 @@ raw_dataset:
 
 model:
   architecture:
-    model_type: 'fully_connected'
+    model_type: 'dense'
     input_shape: 6
     number_units: [16, 8, 4, 1]
     activation_hidden_layers: 'relu'

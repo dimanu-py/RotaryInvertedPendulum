@@ -30,9 +30,6 @@ class FurutaPendulum(DesignSystem):
         self.model.create_model_architecture()
         self.model.compile_model()
 
-    def set_callbacks(self):
-        pass
-
     def training(self):
         pass
 
