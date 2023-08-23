@@ -1,5 +1,4 @@
-from source.helpers.configuration_builder import (Configuration,
-                                                  RawDatasetConfigurationBuilder,
+from source.helpers.configuration_builder import (DatasetConfigurationBuilder,
                                                   NeuralNetworkConfigurationBuilder)
 
 import pytest
@@ -19,8 +18,11 @@ def mock_configuration_raw_dataset():
                         'speed_pendulum',
                         'position_pendulum']
         },
-        'saver': {
-            'dataset_name': 'dataset_test.parquet'
+        'dataset': {
+            'name': 'dataset_test',
+            'folder_to_save': 'datasets',
+            'shuffle_data': True,
+            'window_length': 400
         }
     }
 
@@ -45,13 +47,13 @@ def mock_configuration_neural_network():
 
 
 def test_raw_dataset_configuration_builder(mock_configuration_raw_dataset):
-    builder = RawDatasetConfigurationBuilder()
+    builder = DatasetConfigurationBuilder()
     raw_dataset_configuration = builder.build(configuration_data=mock_configuration_raw_dataset)
 
-    assert isinstance(builder, RawDatasetConfigurationBuilder)
-    assert isinstance(raw_dataset_configuration, RawDatasetConfigurationBuilder)
+    assert isinstance(builder, DatasetConfigurationBuilder)
+    assert isinstance(raw_dataset_configuration, DatasetConfigurationBuilder)
     assert raw_dataset_configuration.matlab_config is not None
-    assert raw_dataset_configuration.dataset_saver_config is not None
+    assert raw_dataset_configuration.dataset_config is not None
 
 
 def test_neural_network_configuration_builder(mock_configuration_neural_network):
