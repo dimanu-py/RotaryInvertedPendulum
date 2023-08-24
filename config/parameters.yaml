@@ -1,22 +1,25 @@
-data:
-  matlab:
-    file_name: 'stabilization_disturbance_5.mat'
-    source: 'synthetic'
-    data: 'data'
-    columns:
-      - 'time'
-      - 'set_point_rotary_arm'
-      - 'control_law'
-      - 'position_rotary_arm'
-      - 'position_pendulum_wrapped'
-      - 'speed_rotary_arm'
-      - 'speed_pendulum'
-      - 'position_pendulum'
-  dataset:
-    name: 'synthetic_data_stabilization_disturbance_2'
-    folder_to_save: 'datasets'
-    shuffle_data: True
-    window_length: 400
+matlab_data:
+  file_name:
+    - 'stabilization_disturbance_5'
+    - 'stabilization_ideal'
+  source: 'synthetic'
+  data_name: 'data'
+  columns:
+    - 'time'
+    - 'set_point_rotary_arm'
+    - 'control_law'
+    - 'position_rotary_arm'
+    - 'position_pendulum_wrapped'
+    - 'speed_rotary_arm'
+    - 'speed_pendulum'
+    - 'position_pendulum'
+
+dataset:
+  create_dataset: True
+  save_dataset: True
+  name: 'stabilization_disturbance_5'
+  shuffle_data: True
+  window_length: 400
 
 model:
   architecture:
@@ -35,7 +38,24 @@ model:
     - 'mae'
     - 'r2'
 
+callbacks:
+    early_stopping:
+        monitored_val: 'val_loss'
+        patience: 5
+        restore_best_weights: True
+        verbose: 1
+    model_checkpoint:
+        path: '/temp/checkpoints'
+        monitored_val: 'val_loss'
+        save_best: True
+    tensor_board:
+        log_dir: '/temp/tensor_boards_logs/'
+        write_graph: True
+        write_images: True
+
+
 training:
+  model_name: 'aaaaa'
   retrain: False
   features:
     - 'position_rotary_arm'
