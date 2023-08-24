@@ -36,4 +36,4 @@ class FullyConnectedNetwork(Architecture):
         # TODO: check this return -> if I return self I keep the encapsulation inside FullyConnectedNetwork but I have
         #  access the model via architecture.model. On the other hand, if I return self.model I get the model directly
         #  but I lose the encapsulation
-        return self
+        return self.model

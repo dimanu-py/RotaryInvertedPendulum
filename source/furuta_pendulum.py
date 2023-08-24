@@ -1,10 +1,8 @@
 from source.deep_learning.dataset_creator import DatasetCreator
 from source.deep_learning.model_creator import DLModel
 from source.helpers.configuration_builder import (Configuration,
-                                                  RawDatasetConfigurationBuilder,
+                                                  DatasetConfigurationBuilder,
                                                   NeuralNetworkConfigurationBuilder)
-from source.helpers.data_saver import SaveParquet
-from source.helpers.matlab_data_converter import MatlabDataConverter
 from source.workers.design_system import DesignSystem
 
 
@@ -13,16 +11,14 @@ class FurutaPendulum(DesignSystem):
     def __init__(self):
         self.model = None
 
-        self.matlab_converter = MatlabDataConverter()
-        self.dataset_saver = SaveParquet()
-        self.raw_dataset_configuration = Configuration(builder=RawDatasetConfigurationBuilder())
+        self.dataset_configuration = Configuration(builder=DatasetConfigurationBuilder())
         self.neural_network_configuration = Configuration(builder=NeuralNetworkConfigurationBuilder())
 
     def create_dataset(self):
-        dataset_creator = DatasetCreator(matlab_converter=self.matlab_converter,
-                                         configuration=self.raw_dataset_configuration)
+        dataset_creator = DatasetCreator(configuration=self.dataset_configuration)
 
-        dataset = dataset_creator.create_dataset()
+        dataset = dataset_creator.create_training_dataset()
+        dataset_creator.save_dataset(dataset)
         return dataset
 
     def create_model(self):

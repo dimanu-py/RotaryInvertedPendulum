@@ -50,5 +50,5 @@ class SaveParquet(SaveFile):
         Build the full path to save the file.
         """
         self.check_folder_exists(f'{self.SAVE_FOLDER}/{folder_to_save}')
-        full_path = f'{self.folder_path}/{save_file_name}.parquet'
+        full_path = f'{self.SAVE_FOLDER}/{folder_to_save}/{save_file_name}.parquet'
         return full_path

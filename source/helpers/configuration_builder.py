@@ -51,10 +51,13 @@ class MatlabConfiguration(ConfigurationComponent):
         self.columns = configuration_data.get('columns')
 
 
-class DatasetSaverConfiguration(ConfigurationComponent):
+class DatasetConfiguration(ConfigurationComponent):
     """Class to define a dataset saver configuration component to save data into a file"""
     def __init__(self, configuration_data: Dict[str, Any]) -> None:
-        self.dataset_name = configuration_data.get('dataset_name')
+        self.dataset_name = configuration_data.get('name')
+        self.folder_to_save = configuration_data.get('folder_to_save')
+        self.shuffle_data = configuration_data.get('shuffle_data')
+        self.window_length = configuration_data.get('window_length')
 
 
 class ArchitectureModelConfiguration(ConfigurationComponent):
@@ -93,15 +96,15 @@ class ConfigurationBuilder(ABC):
         pass
 
 
-class RawDatasetConfigurationBuilder(ConfigurationBuilder):
+class DatasetConfigurationBuilder(ConfigurationBuilder):
     """Class to define a raw dataset configuration builder"""
     matlab_config: "ConfigurationComponent" = None
-    dataset_saver_config: "ConfigurationComponent" = None
+    dataset_config: "ConfigurationComponent" = None
 
-    def build(self, configuration_data: Dict[str, Any]) -> "RawDatasetConfigurationBuilder":
+    def build(self, configuration_data: Dict[str, Any]) -> "DatasetConfigurationBuilder":
         """Build a raw dataset configuration object with its corresponding configuration components"""
         self.matlab_config = MatlabConfiguration(configuration_data=configuration_data['matlab'])
-        self.dataset_saver_config = DatasetSaverConfiguration(configuration_data=configuration_data['saver'])
+        self.dataset_config = DatasetConfiguration(configuration_data=configuration_data['dataset'])
         return self
 
 

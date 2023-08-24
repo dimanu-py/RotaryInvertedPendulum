@@ -1,4 +1,4 @@
-raw_dataset:
+data:
   matlab:
     file_name: 'stabilization_disturbance_5.mat'
     source: 'synthetic'
@@ -12,8 +12,11 @@ raw_dataset:
       - 'speed_rotary_arm'
       - 'speed_pendulum'
       - 'position_pendulum'
-  saver:
-    dataset_name: 'synthetic_data_stabilization_disturbance_2.parquet'
+  dataset:
+    name: 'synthetic_data_stabilization_disturbance_2'
+    folder_to_save: 'datasets'
+    shuffle_data: True
+    window_length: 400
 
 model:
   architecture:
@@ -31,7 +34,15 @@ model:
     - 'mse'
     - 'mae'
     - 'r2'
+
 training:
+  data_columns:
+    - 'position_rotary_arm'
+    - 'position_pendulum_wrapped'
+    - 'speed_rotary_arm'
+    - 'speed_pendulum'
+  target:
+    - 'control_law'
   epochs: 100
   batch_size: 32
   verbose: 1
