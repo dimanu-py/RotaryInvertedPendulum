@@ -89,7 +89,7 @@ class MetricsConfiguration(ConfigurationComponent):
         self.metrics = configuration_data
 
 
-class TrainingConfiguration(ConfigurationComponent):
+class LearningConfiguration(ConfigurationComponent):
     def __init__(self, configuration_data: Dict[str, Any]) -> None:
         self.re_train = configuration_data.get('retrain')
         self.features = configuration_data.get('features')
@@ -99,6 +99,11 @@ class TrainingConfiguration(ConfigurationComponent):
         self.epochs = configuration_data.get('epochs')
         self.batch_size = configuration_data.get('batch_size')
         self.verbose = configuration_data.get('verbose')
+
+
+class CallbacksConfiguration(ConfigurationComponent):
+    def __init__(self, configuration_data: Dict[str, Any]):
+        self.callbacks = configuration_data
 
 
 class ConfigurationBuilder(ABC):
@@ -139,7 +144,9 @@ class NeuralNetworkConfigurationBuilder(ConfigurationBuilder):
 class TrainingConfigurationBuilder(ConfigurationBuilder):
     """Class to define the configuration to train the neural network"""
     training_config: "ConfigurationComponent" = None
+    callbacks_config: "ConfigurationComponent" = None
 
     def build(self, configuration_data: Dict[str, Any]) -> "TrainingConfigurationBuilder":
-        self.training_config = TrainingConfiguration(configuration_data=configuration_data)
+        self.training_config = LearningConfiguration(configuration_data=configuration_data['training'])
+        self.callbacks_config = CallbacksConfiguration(configuration_data=configuration_data['callbacks'])
         return self

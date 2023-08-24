@@ -35,17 +35,32 @@ model:
     - 'mae'
     - 'r2'
 
-training:
-  retrain: False
-  features:
-    - 'position_rotary_arm'
-    - 'position_pendulum_wrapped'
-    - 'speed_rotary_arm'
-    - 'speed_pendulum'
-  target:
-    - 'control_law'
-  test_size: 20
-  validation_size: 30
-  epochs: 100
-  batch_size: 32
-  verbose: 1
+learning:
+  training:
+    retrain: False
+    features:
+      - 'position_rotary_arm'
+      - 'position_pendulum_wrapped'
+      - 'speed_rotary_arm'
+      - 'speed_pendulum'
+    target:
+      - 'control_law'
+    test_size: 20
+    validation_size: 30
+    epochs: 100
+    batch_size: 32
+    verbose: 1
+  callbacks:
+    early_stopping:
+        monitored_val: 'val_loss'
+        patience: 5
+        restore_best_weights: True
+        verbose: 1
+    model_checkpoint:
+        path: '/temp/checkpoints'
+        monitored_val: 'val_loss'
+        save_best: True
+    tensor_board:
+        log_dir: '/temp/tensor_boards_logs/'
+        write_graph: True
+        write_images: True
