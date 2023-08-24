@@ -89,6 +89,18 @@ class MetricsConfiguration(ConfigurationComponent):
         self.metrics = configuration_data
 
 
+class TrainingConfiguration(ConfigurationComponent):
+    def __init__(self, configuration_data: Dict[str, Any]) -> None:
+        self.re_train = configuration_data.get('retrain')
+        self.features = configuration_data.get('features')
+        self.target = configuration_data.get('target')
+        self.test_size = configuration_data.get('test_size')
+        self.validation_size = configuration_data.get('validation_size')
+        self.epochs = configuration_data.get('epochs')
+        self.batch_size = configuration_data.get('batch_size')
+        self.verbose = configuration_data.get('verbose')
+
+
 class ConfigurationBuilder(ABC):
     """Abstract class to define a configuration builder"""
     @abstractmethod
@@ -121,4 +133,13 @@ class NeuralNetworkConfigurationBuilder(ConfigurationBuilder):
         self.optimizer_config = OptimizerConfiguration(configuration_data=configuration_data['optimizer'])
         self.loss_config = LossConfiguration(configuration_data=configuration_data['loss'])
         self.metrics_config = MetricsConfiguration(configuration_data=configuration_data['metrics'])
+        return self
+
+
+class TrainingConfigurationBuilder(ConfigurationBuilder):
+    """Class to define the configuration to train the neural network"""
+    training_config: "ConfigurationComponent" = None
+
+    def build(self, configuration_data: Dict[str, Any]) -> "TrainingConfigurationBuilder":
+        self.training_config = TrainingConfiguration(configuration_data=configuration_data)
         return self

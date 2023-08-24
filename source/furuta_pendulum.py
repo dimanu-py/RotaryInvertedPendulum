@@ -1,8 +1,10 @@
 from source.deep_learning.dataset_creator import DatasetCreator
 from source.deep_learning.model_creator import DLModel
+from source.deep_learning.model_trainer import Trainer
 from source.helpers.configuration_builder import (Configuration,
                                                   DatasetConfigurationBuilder,
-                                                  NeuralNetworkConfigurationBuilder)
+                                                  NeuralNetworkConfigurationBuilder,
+                                                  TrainingConfigurationBuilder)
 from source.workers.design_system import DesignSystem
 
 
@@ -13,6 +15,7 @@ class FurutaPendulum(DesignSystem):
 
         self.dataset_configuration = Configuration(builder=DatasetConfigurationBuilder())
         self.neural_network_configuration = Configuration(builder=NeuralNetworkConfigurationBuilder())
+        self.training_configuration = Configuration(builder=TrainingConfigurationBuilder())
 
     def create_dataset(self):
         dataset_creator = DatasetCreator(configuration=self.dataset_configuration)
@@ -25,9 +28,11 @@ class FurutaPendulum(DesignSystem):
         self.model = DLModel(configuration=self.neural_network_configuration)
         self.model.create_model_architecture()
         self.model.compile_model()
+        return self.model
 
-    def training(self):
-        pass
+    def training(self, model, dataset):
+        trainer = Trainer(configuration=self.training_configuration)
+        trainer.train(model, dataset)
 
     def evaluate(self):
         pass
@@ -39,4 +44,5 @@ class FurutaPendulum(DesignSystem):
 if __name__ == '__main__':
     furuta_pendulum = FurutaPendulum()
     training_data = furuta_pendulum.create_dataset()
-    furuta_pendulum.create_model()
+    neural_network = furuta_pendulum.create_model()
+    furuta_pendulum.training(neural_network, training_data)
