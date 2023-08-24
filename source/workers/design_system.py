@@ -12,7 +12,7 @@ class DesignSystem(ABC):
         pass
 
     @abstractmethod
-    def training(self):
+    def training(self, model, dataset):
         pass
 
     @abstractmethod

@@ -36,13 +36,16 @@ model:
     - 'r2'
 
 training:
-  data_columns:
+  retrain: False
+  features:
     - 'position_rotary_arm'
     - 'position_pendulum_wrapped'
     - 'speed_rotary_arm'
     - 'speed_pendulum'
   target:
     - 'control_law'
+  test_size: 20
+  validation_size: 30
   epochs: 100
   batch_size: 32
   verbose: 1
