@@ -1,5 +1,5 @@
 import yaml
-from functools import wraps
+import os
 
 
 def read_yaml_parameters(folder_path: str, yaml_file: str = None) -> dict:
@@ -27,3 +27,11 @@ def extract_extension(file_name: str) -> str:
     """
     extension = file_name.split('.')[-1]
     return extension
+
+
+def create_folder_if_not_exists(folder_path: str) -> None:
+    """
+    Check if the folder exists. If not, create it.
+    """
+    if not os.path.exists(folder_path):
+        os.makedirs(folder_path)
