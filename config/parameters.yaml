@@ -1,25 +1,50 @@
 matlab_data:
-  file_name:
-    - 'stabilization_disturbance_5'
-    - 'stabilization_ideal'
-  source: 'synthetic'
-  data_name: 'data'
-  columns:
-    - 'time'
-    - 'set_point_rotary_arm'
-    - 'control_law'
-    - 'position_rotary_arm'
-    - 'position_pendulum_wrapped'
-    - 'speed_rotary_arm'
-    - 'speed_pendulum'
-    - 'position_pendulum'
+  training:
+    file_name:
+      - 'stabilization_disturbance_5'
+      - 'stabilization_ideal'
+    source: 'synthetic'
+    data_name: 'data'
+    columns:
+      - 'time'
+      - 'set_point_rotary_arm'
+      - 'control_law'
+      - 'position_rotary_arm'
+      - 'position_pendulum_wrapped'
+      - 'speed_rotary_arm'
+      - 'speed_pendulum'
+      - 'position_pendulum'
 
-dataset:
-  create_dataset: True
-  save_dataset: True
-  name: 'stabilization_disturbance_5'
-  shuffle_data: True
-  window_length: 400
+  validation_and_test:
+    file_name:
+      - 'stabilization_disturbance_5'
+      - 'stabilization_ideal'
+    source: 'synthetic'
+    data_name: 'data'
+    columns:
+      - 'time'
+      - 'set_point_rotary_arm'
+      - 'control_law'
+      - 'position_rotary_arm'
+      - 'position_pendulum_wrapped'
+      - 'speed_rotary_arm'
+      - 'speed_pendulum'
+      - 'position_pendulum'
+
+datasets:
+  training:
+    create_dataset: True
+    save_dataset: True
+    name: 'stabilization_disturbance_5'
+    shuffle_data: True
+    window_length: 400
+
+  validation_and_test:
+    create_dataset: True
+    save_dataset: True
+    name: 'stabilization_disturbance_5'
+    shuffle_data: True
+    window_length: 400
 
 model:
   architecture:
@@ -45,7 +70,7 @@ callbacks:
       restore_best_weights: True
       verbose: 1
     model_checkpoint:
-      filepath: '/temp/checkpoints'
+      filepath: '/temp/checkpoints/model_name.h5'
       monitor: 'val_loss'
       save_best_only: True
     reduce_lr:
@@ -54,11 +79,11 @@ callbacks:
       patience: 4
       verbose: 1
     tensor_board:
-      log_dir: '/temp/tensor_board_logs'
+      log_dir: '/temp/tensor_board_logs/model_name'
       write_graph: True
       write_images: True
 
-training:
+training_model:
   model_name: 'aaaaa'
   retrain: False
   features:
