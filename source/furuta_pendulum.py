@@ -188,7 +188,7 @@ if __name__ == '__main__':
 
     dev_features, test_features, dev_target, test_target = train_test_split(dev_test_features.values,
                                                                             dev_test_targets.values,
-                                                                            test_size=0.2,
+                                                                            test_size=training_configuration['test_size'],
                                                                             shuffle=False)
     # TRAIN THE NEURAL NETWORK
     history = furuta_pendulum_model.fit(train_features.values,
