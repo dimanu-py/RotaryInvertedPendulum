@@ -13,7 +13,11 @@ from keras.metrics import (MeanAbsoluteError,
                            R2Score,
                            MeanSquaredLogarithmicError,
                            MeanAbsolutePercentageError)
-from typing import List
+from keras.callbacks import (EarlyStopping,
+                             ReduceLROnPlateau,
+                             TensorBoard,
+                             ModelCheckpoint)
+from typing import List, Dict, Any
 
 from source.dataset_generator import generate_datasets
 from source.furuta_utils import read_yaml_parameters, create_folder_if_not_exists
@@ -68,12 +72,13 @@ def get_optimizer(optimizer_type: str,
 
 
 def get_loss_function(loss_type: List[str]) -> "keras.losses":
+    loss_type, = loss_type
     loss_function_classes = {'mse': MeanSquaredError,
                              'mae': MeanAbsoluteError,
                              'msle': MeanSquaredLogarithmicError}
 
     try:
-        selected_loss_function = loss_function_classes[loss_type, ]()
+        selected_loss_function = loss_function_classes[loss_type]()
         return selected_loss_function
     except KeyError:
         print(f'Loss function {loss_type} not implemented yet.')
@@ -94,8 +99,16 @@ def get_metrics(metrics_type: List[str]) -> List["keras.metrics"]:
         print(f'Metrics {metrics_type} not implemented yet.')
 
 
-def get_callbacks():
-    pass
+def get_callbacks(callback_type: str, configuration: Dict[str, Any]):
+    callbacks_classes = {'early_stopping': EarlyStopping,
+                         'model_checkpoint': ModelCheckpoint,
+                         'reduce_lr': ReduceLROnPlateau,
+                         'tensor_board': TensorBoard}
+    try:
+        selected_callback = callbacks_classes[callback_type](**configuration)
+        return selected_callback
+    except KeyError:
+        print(f'Callback {callback_type} not implemented yet')
 
 
 if __name__ == '__main__':
@@ -129,10 +142,14 @@ if __name__ == '__main__':
                               learning_rate=neural_network_configuration['optimizer']['learning_rate'])
     loss = get_loss_function(loss_type=neural_network_configuration['loss'])
     metrics = get_metrics(metrics_type=neural_network_configuration['metrics'])
+    callbacks = [get_callbacks(callback_type, configuration) for callback_type, configuration in callbacks_configuration.items()]
 
     furuta_pendulum_model.compile(loss=loss,
                                   optimizer=optimizer,
                                   metrics=metrics)
+
+    history = furuta_pendulum_model.fit()
+
 
 
 

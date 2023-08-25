@@ -40,19 +40,23 @@ model:
 
 callbacks:
     early_stopping:
-        monitored_val: 'val_loss'
-        patience: 5
-        restore_best_weights: True
-        verbose: 1
+      monitor: 'val_loss'
+      patience: 12
+      restore_best_weights: True
+      verbose: 1
     model_checkpoint:
-        path: '/temp/checkpoints'
-        monitored_val: 'val_loss'
-        save_best: True
+      filepath: '/temp/checkpoints'
+      monitor: 'val_loss'
+      save_best_only: True
+    reduce_lr:
+      monitor: 'val_loss'
+      factor: 0.02
+      patience: 4
+      verbose: 1
     tensor_board:
-        log_dir: '/temp/tensor_boards_logs/'
-        write_graph: True
-        write_images: True
-
+      log_dir: '/temp/tensor_board_logs'
+      write_graph: True
+      write_images: True
 
 training:
   model_name: 'aaaaa'
