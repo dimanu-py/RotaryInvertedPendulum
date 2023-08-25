@@ -204,3 +204,7 @@ if __name__ == '__main__':
     save_model(model=furuta_pendulum_model,
                folder_to_save=models_path,
                name=training_configuration['model_name'])
+
+    scores = furuta_pendulum_model.evaluate(test_features.values,
+                                            test_target.values)
+    predictions = furuta_pendulum_model.predict(test_features)
