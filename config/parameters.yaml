@@ -38,6 +38,7 @@ datasets:
     name: 'stabilization_disturbance_5'
     shuffle_data: True
     window_length: 400
+    sample: 1
 
   validation_and_test:
     create_dataset: True
@@ -45,6 +46,7 @@ datasets:
     name: 'stabilization_disturbance_5'
     shuffle_data: True
     window_length: 400
+    sample: 1
 
 model:
   architecture:

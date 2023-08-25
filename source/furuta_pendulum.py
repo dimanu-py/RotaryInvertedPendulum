@@ -1,9 +1,12 @@
+from typing import List, Dict, Any
+
 import pandas as pd
 from keras import Sequential
+from keras.callbacks import (EarlyStopping,
+                             ReduceLROnPlateau,
+                             TensorBoard,
+                             ModelCheckpoint)
 from keras.layers import Dense, Input
-from keras.optimizers import (Adam,
-                              SGD,
-                              RMSprop)
 from keras.losses import (MeanSquaredError,
                           MeanAbsoluteError,
                           MeanSquaredLogarithmicError)
@@ -13,17 +16,17 @@ from keras.metrics import (MeanAbsoluteError,
                            R2Score,
                            MeanSquaredLogarithmicError,
                            MeanAbsolutePercentageError)
-from keras.callbacks import (EarlyStopping,
-                             ReduceLROnPlateau,
-                             TensorBoard,
-                             ModelCheckpoint)
-from typing import List, Dict, Any
+from keras.optimizers import (Adam,
+                              SGD,
+                              RMSprop)
+from sklearn.model_selection import train_test_split
 
-from source.dataset_generator import generate_datasets
+from source.dataset_generator import create_shuffled_dataset
 from source.furuta_utils import read_yaml_parameters, create_folder_if_not_exists
 
 configuration_path = '../config'
 datasets_path = '../data/datasets'
+models_path = '../data/models'
 
 
 def save_dataset(data: pd.DataFrame,
@@ -34,6 +37,15 @@ def save_dataset(data: pd.DataFrame,
     saving_path = f'{folder_to_save}/{file_name}.parquet'
     data.to_parquet(path=saving_path,
                     index=False)
+
+
+def save_model(model,
+               folder_to_save,
+               name):
+
+    create_folder_if_not_exists(folder_path=folder_to_save)
+    model_path = f'{folder_to_save}/{name}.h5'
+    model.save(model_path)
 
 
 def create_model_architecture(input_shape,
@@ -113,31 +125,49 @@ def get_callbacks(callback_type: str, configuration: Dict[str, Any]):
 
 if __name__ == '__main__':
     global_configuration = read_yaml_parameters(folder_path=configuration_path)
-    matlab_configuration = global_configuration['matlab_data']
-    dataset_configuration = global_configuration['dataset']
+
+    # SET DIFFERENT CONFIGURATIONS
+    matlab_configuration_training = global_configuration['matlab_data']['training']
+    dataset_configuration_training = global_configuration['datasets']['training']
+
+    matlab_configuration_dev_test = global_configuration['matlab_data']['validation_and_test']
+    dataset_configuration_dev_test = global_configuration['datasets']['validation_and_test']
+
     neural_network_configuration = global_configuration['model']
     callbacks_configuration = global_configuration['callbacks']
+    training_configuration = global_configuration['training_model']
 
-    """
-    We can create a dataset from zero, getting the data from a matlab file and converting into a dataframe or we can
-    use an existing dataframe that we've created before.
-    In case we create a new dataset, we can either use the raw dataset or the same dataset but with the data shuffled
-    using sliding windows.
-    """
-    if dataset_configuration['create_dataset']:
-        raw_dataset, shuffled_dataset = generate_datasets(matlab_configuration=matlab_configuration,
-                                                          dataset_configuration=dataset_configuration)
+    # CREATE OR LOAD TRAINING DATASET
+    if dataset_configuration_training['create_dataset']:
+        training_dataset = create_shuffled_dataset(matlab_configuration=matlab_configuration_training,
+                                                   dataset_configuration=dataset_configuration_training)
 
-        if dataset_configuration['save_dataset']:
-            save_dataset(data=shuffled_dataset,
+        if dataset_configuration_training['save_dataset']:
+            save_dataset(data=training_dataset,
                          folder_to_save=datasets_path,
-                         file_name=dataset_configuration['name'])
+                         file_name=dataset_configuration_training['name'])
+    else:
+        training_dataset = pd.read_parquet(path=f"{datasets_path}/{dataset_configuration_training['name']}")
 
+    # CREATE OR LOAD DEV AND TEST DATASET
+    if dataset_configuration_dev_test['create_dataset']:
+        dev_test_dataset = create_shuffled_dataset(matlab_configuration=matlab_configuration_dev_test,
+                                                   dataset_configuration=dataset_configuration_dev_test)
+
+        if dataset_configuration_dev_test['save_dataset']:
+            save_dataset(data=dev_test_dataset,
+                         folder_to_save=datasets_path,
+                         file_name=dataset_configuration_dev_test['name'])
+    else:
+        dev_test_dataset = pd.read_parquet(path=f"{datasets_path}/{dataset_configuration_dev_test['name']}")
+
+    # CREATE THE ARCHITECTURE
     furuta_pendulum_model = create_model_architecture(input_shape=neural_network_configuration['architecture']['input_shape'],
                                                       number_units=neural_network_configuration['architecture']['number_units'],
                                                       activation_hidden_layers=neural_network_configuration['architecture']['activation_hidden_layers'],
                                                       activation_output_layer=neural_network_configuration['architecture']['activation_output_layer'])
 
+    # SET OPTIMIZER, LOSS FUNCTION, METRICS AND CALLBACKS
     optimizer = get_optimizer(optimizer_type=neural_network_configuration['optimizer']['optimizer_type'],
                               learning_rate=neural_network_configuration['optimizer']['learning_rate'])
     loss = get_loss_function(loss_type=neural_network_configuration['loss'])
@@ -148,8 +178,29 @@ if __name__ == '__main__':
                                   optimizer=optimizer,
                                   metrics=metrics)
 
-    history = furuta_pendulum_model.fit()
+    # LOAD MODEL IF WE WANT TO RE-TRAIN
+    if training_configuration['retrain']:
+        furuta_pendulum_model.load_weights(callbacks_configuration['model_checkpoint']['filepath'])
 
+    # SEPARATE FEATURES AND TARGETS FROM TRAINING, DEV AND TEST SETS
+    train_features, train_target = training_dataset[training_configuration['features']], training_dataset[training_configuration['target']]
+    dev_test_features, dev_test_targets = dev_test_dataset[training_configuration['features']], dev_test_dataset[training_configuration['target']]
 
+    dev_features, test_features, dev_target, test_target = train_test_split(dev_test_features.values,
+                                                                            dev_test_targets.values,
+                                                                            test_size=0.2,
+                                                                            shuffle=False)
+    # TRAIN THE NEURAL NETWORK
+    history = furuta_pendulum_model.fit(train_features.values,
+                                        train_target.values,
+                                        epochs=training_configuration['epochs'],
+                                        batch_size=training_configuration['batch_size'],
+                                        validation_data=(dev_features.values, dev_target.values),
+                                        callbacks=callbacks,
+                                        verbose=1,
+                                        shuffle=False)
 
-
+    # SAVE MODEL IN DATA FOLDER
+    save_model(model=furuta_pendulum_model,
+               folder_to_save=models_path,
+               name=training_configuration['model_name'])

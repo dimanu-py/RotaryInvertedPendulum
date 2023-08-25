@@ -40,17 +40,26 @@ def shuffle_data_with_sliding_windows(data: pd.DataFrame,
     return shuffled_dataset
 
 
-def generate_datasets(matlab_configuration: Dict[str, Any],
-                      dataset_configuration: Dict[str, Any]):
+def generate_raw_dataset(matlab_configuration: Dict[str, Any]) -> pd.DataFrame:
     raw_dataset = create_dataset_from_matlab_data(simulation_type=matlab_configuration['source'],
                                                   file_name=matlab_configuration['file_name'],
                                                   data_name=matlab_configuration['data_name'],
                                                   columns_name=matlab_configuration['columns'])
+    return raw_dataset
+
+
+def create_shuffled_dataset(matlab_configuration,
+                            dataset_configuration):
+    raw_dataset = generate_raw_dataset(matlab_configuration=matlab_configuration)
 
     if dataset_configuration['shuffle_data']:
-        shuffled_dataset = shuffle_data_with_sliding_windows(data=raw_dataset,
-                                                             window_length=dataset_configuration['window_length'])
+        dataset = shuffle_data_with_sliding_windows(data=raw_dataset,
+                                                    window_length=dataset_configuration['window_length'])
     else:
-        shuffled_dataset = None
+        dataset = raw_dataset
+    dataset = dataset.sample(frac=dataset_configuration['sample'])
+    return dataset
 
-    return raw_dataset, shuffled_dataset
+
+
+
