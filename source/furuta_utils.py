@@ -16,9 +16,6 @@ def read_yaml_parameters(folder_path: str, yaml_file: str = None) -> dict:
             parameters = yaml.load(stream=params_file,
                                    Loader=yaml.SafeLoader)
 
-            parameters['callbacks']['model_checkpoint']['filepath'] = parameters['callbacks']['model_checkpoint']['filepath'].replace('model_name', parameters['training_model']['model_name'])
-            parameters['callbacks']['tensor_board']['log_dir'] = parameters['callbacks']['tensor_board']['log_dir'].replace('model_name', parameters['training_model']['model_name'])
-
             return parameters
     except FileNotFoundError as error:
         print(f'Impossible to find the yaml file -> {error.args[1]}')
