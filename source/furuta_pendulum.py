@@ -1,24 +1,9 @@
 from typing import List, Dict, Any
 
+import keras
 import pandas as pd
 from keras import Sequential
-from keras.callbacks import (EarlyStopping,
-                             ReduceLROnPlateau,
-                             TensorBoard,
-                             ModelCheckpoint)
 from keras.layers import Dense, Input
-from keras.losses import (MeanSquaredError,
-                          MeanAbsoluteError,
-                          MeanSquaredLogarithmicError)
-from keras.metrics import (MeanAbsoluteError,
-                           MeanSquaredError,
-                           RootMeanSquaredError,
-                           R2Score,
-                           MeanSquaredLogarithmicError,
-                           MeanAbsolutePercentageError)
-from keras.optimizers import (Adam,
-                              SGD,
-                              RMSprop)
 from sklearn.model_selection import train_test_split
 
 from source.dataset_generator import create_shuffled_dataset
@@ -72,9 +57,9 @@ def create_model_architecture(input_shape,
 def get_optimizer(optimizer_type: str,
                   learning_rate: float) -> "keras.optimizers":
 
-    optimizer_classes = {'adam': Adam,
-                         'sgd': SGD,
-                         'rmsprop': RMSprop}
+    optimizer_classes = {'adam': keras.optimizers.Adam,
+                         'sgd': keras.optimizers.SGD,
+                         'rmsprop': keras.optimizers.RMSprop}
 
     try:
         selected_optimizer = optimizer_classes[optimizer_type](learning_rate=learning_rate)
@@ -85,9 +70,9 @@ def get_optimizer(optimizer_type: str,
 
 def get_loss_function(loss_type: List[str]) -> "keras.losses":
     loss_type, = loss_type
-    loss_function_classes = {'mse': MeanSquaredError,
-                             'mae': MeanAbsoluteError,
-                             'msle': MeanSquaredLogarithmicError}
+    loss_function_classes = {'mse': keras.losses.MeanSquaredError,
+                             'mae': keras.losses.MeanAbsoluteError,
+                             'msle': keras.losses.MeanSquaredLogarithmicError}
 
     try:
         selected_loss_function = loss_function_classes[loss_type]()
@@ -97,12 +82,12 @@ def get_loss_function(loss_type: List[str]) -> "keras.losses":
 
 
 def get_metrics(metrics_type: List[str]) -> List["keras.metrics"]:
-    metrics_classes = {'mae': MeanAbsoluteError,
-                       'mse': MeanSquaredError,
-                       'rmse': RootMeanSquaredError,
-                       'mape': MeanAbsolutePercentageError,
-                       'msle': MeanSquaredLogarithmicError,
-                       'r2': R2Score}
+    metrics_classes = {'mae': keras.metrics.MeanAbsoluteError,
+                       'mse': keras.metrics.MeanSquaredError,
+                       'rmse': keras.metrics.RootMeanSquaredError,
+                       'mape': keras.metrics.MeanAbsolutePercentageError,
+                       'msle': keras.metrics.MeanSquaredLogarithmicError,
+                       'r2': keras.metrics.R2Score}
 
     try:
         selected_metrics = [metrics_classes[metric]() for metric in metrics_type]
@@ -112,10 +97,10 @@ def get_metrics(metrics_type: List[str]) -> List["keras.metrics"]:
 
 
 def get_callbacks(callback_type: str, configuration: Dict[str, Any]):
-    callbacks_classes = {'early_stopping': EarlyStopping,
-                         'model_checkpoint': ModelCheckpoint,
-                         'reduce_lr': ReduceLROnPlateau,
-                         'tensor_board': TensorBoard}
+    callbacks_classes = {'early_stopping': keras.callbacks.EarlyStopping,
+                         'model_checkpoint': keras.callbacks.ModelCheckpoint,
+                         'reduce_lr': keras.callbacks.ReduceLROnPlateau,
+                         'tensor_board': keras.callbacks.TensorBoard}
     try:
         selected_callback = callbacks_classes[callback_type](**configuration)
         return selected_callback
@@ -138,28 +123,28 @@ if __name__ == '__main__':
     training_configuration = global_configuration['training_model']
 
     # CREATE OR LOAD TRAINING DATASET
-    if dataset_configuration_training['create_dataset']:
+    try:
+        training_dataset = pd.read_parquet(path=f"{datasets_path}/{dataset_configuration_training['name']}.parquet")
+    except (FileNotFoundError, FileExistsError):
         training_dataset = create_shuffled_dataset(matlab_configuration=matlab_configuration_training,
                                                    dataset_configuration=dataset_configuration_training)
 
-        if dataset_configuration_training['save_dataset']:
-            save_dataset(data=training_dataset,
-                         folder_to_save=datasets_path,
-                         file_name=dataset_configuration_training['name'])
-    else:
-        training_dataset = pd.read_parquet(path=f"{datasets_path}/{dataset_configuration_training['name']}")
+    if dataset_configuration_training['save_dataset']:
+        save_dataset(data=training_dataset,
+                     folder_to_save=datasets_path,
+                     file_name=dataset_configuration_training['name'])
 
     # CREATE OR LOAD DEV AND TEST DATASET
-    if dataset_configuration_dev_test['create_dataset']:
+    try:
+        dev_test_dataset = pd.read_parquet(path=f"{datasets_path}/{dataset_configuration_dev_test['name']}.parquet")
+    except (FileNotFoundError, FileExistsError):
         dev_test_dataset = create_shuffled_dataset(matlab_configuration=matlab_configuration_dev_test,
                                                    dataset_configuration=dataset_configuration_dev_test)
 
-        if dataset_configuration_dev_test['save_dataset']:
-            save_dataset(data=dev_test_dataset,
-                         folder_to_save=datasets_path,
-                         file_name=dataset_configuration_dev_test['name'])
-    else:
-        dev_test_dataset = pd.read_parquet(path=f"{datasets_path}/{dataset_configuration_dev_test['name']}")
+    if dataset_configuration_dev_test['save_dataset']:
+        save_dataset(data=dev_test_dataset,
+                     folder_to_save=datasets_path,
+                     file_name=dataset_configuration_dev_test['name'])
 
     # CREATE THE ARCHITECTURE
     furuta_pendulum_model = create_model_architecture(input_shape=neural_network_configuration['architecture']['input_shape'],
@@ -195,7 +180,7 @@ if __name__ == '__main__':
                                         train_target.values,
                                         epochs=training_configuration['epochs'],
                                         batch_size=training_configuration['batch_size'],
-                                        validation_data=(dev_features.values, dev_target.values),
+                                        validation_data=(dev_features, dev_target),
                                         callbacks=callbacks,
                                         verbose=1,
                                         shuffle=False)
@@ -205,6 +190,6 @@ if __name__ == '__main__':
                folder_to_save=models_path,
                name=training_configuration['model_name'])
 
-    scores = furuta_pendulum_model.evaluate(test_features.values,
-                                            test_target.values)
+    scores = furuta_pendulum_model.evaluate(test_features,
+                                            test_target)
     predictions = furuta_pendulum_model.predict(test_features)
