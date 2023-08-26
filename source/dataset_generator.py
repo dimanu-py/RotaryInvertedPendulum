@@ -57,7 +57,9 @@ def create_shuffled_dataset(matlab_configuration,
                                                     window_length=dataset_configuration['window_length'])
     else:
         dataset = raw_dataset
-    dataset = dataset.sample(frac=dataset_configuration['sample'])
+
+    number_rows_to_get = int(len(dataset) * dataset_configuration['sample'])
+    dataset = dataset.iloc[:number_rows_to_get]
     return dataset
 
 
