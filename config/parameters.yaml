@@ -2,8 +2,12 @@ matlab_data:
   training:
     file_name:
       - 'stabilization_disturbance_5'
-      - 'stabilization_ideal'
-    source: 'synthetic'
+      - 'stabilization_square_12_04'
+      - 'stabilization_sin_50_007'
+      - 'stabilization_disturbance_6_sawtooth_sin'
+      - 'stabilization_noise_15e-6'
+      - 'stabilization_square_10_006'
+    source: 'real'
     data_name: 'data'
     columns:
       - 'time'
@@ -17,9 +21,12 @@ matlab_data:
 
   validation_and_test:
     file_name:
-      - 'stabilization_disturbance_5'
-      - 'stabilization_ideal'
-    source: 'synthetic'
+      - 'stabilization_disturbance_3_sin_square'
+      - 'stabilization_disturbance_6'
+      - 'stabilization_noise_10e-4'
+      - 'stabilization_sawtooth_27_01'
+      - 'stabilization_square_40_02'
+    source: 'real'
     data_name: 'data'
     columns:
       - 'time'
@@ -33,37 +40,37 @@ matlab_data:
 
 datasets:
   training:
-    create_dataset: True
     save_dataset: True
-    name: 'stabilization_disturbance_5'
+    name: '270820232036_real_training'
     shuffle_data: True
-    window_length: 400
+    window_length: 6000
     sample: 1
 
   validation_and_test:
-    create_dataset: True
     save_dataset: True
-    name: 'stabilization_disturbance_5'
+    name: '270820232036_real_dev_test'
     shuffle_data: True
-    window_length: 400
-    sample: 1
+    window_length: 6000
+    sample: 0.15
 
 model:
   architecture:
     model_type: 'dense'
-    input_shape: 6
-    number_units: [16, 8, 4, 1]
-    activation_hidden_layers: 'relu'
+    input_shape: 4
+    number_units: [8, 4]
+    activation_hidden_layers: 'tanh'
     activation_output_layer: 'linear'
+    dropout: 0
+    regularization:
+      type: 'l2'
+      penalty: 0.1
   optimizer:
-    optimizer_type: 'sgd'
-    learning_rate: 0.01
+    optimizer_type: 'adam'
+    learning_rate: 0.001
   loss:
     - 'mse'
   metrics:
-    - 'mse'
     - 'mae'
-    - 'r2'
 
 callbacks:
     early_stopping:
@@ -72,31 +79,31 @@ callbacks:
       restore_best_weights: True
       verbose: 1
     model_checkpoint:
-      filepath: '/temp/checkpoints/model_name.h5'
+      filepath: '../temp/checkpoints'
       monitor: 'val_loss'
       save_best_only: True
     reduce_lr:
       monitor: 'val_loss'
-      factor: 0.02
-      patience: 4
+      factor: 0.01
+      patience: 2
       verbose: 1
     tensor_board:
-      log_dir: '/temp/tensor_board_logs/model_name'
+      log_dir: '../temp/tensor_board_logs'
       write_graph: True
       write_images: True
 
 training_model:
-  model_name: 'aaaaa'
+  model_name: '270820232122_real'
   retrain: False
   features:
+#    - 'set_point_rotary_arm'
     - 'position_rotary_arm'
     - 'position_pendulum_wrapped'
     - 'speed_rotary_arm'
     - 'speed_pendulum'
   target:
     - 'control_law'
-  test_size: 20
-  validation_size: 30
-  epochs: 100
-  batch_size: 32
+  test_size: 0.2
+  epochs: 70
+  batch_size: 16
   verbose: 1

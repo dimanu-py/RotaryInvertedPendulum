@@ -1,17 +1,21 @@
 from typing import List, Dict, Any
 
-import keras
+from tensorflow import keras
+from keras_tuner.engine.hyperparameters import HyperParameters
 import pandas as pd
 from keras import Sequential
-from keras.layers import Dense, Input
+from keras.layers import Dense, Input, Dropout
 from sklearn.model_selection import train_test_split
 
 from source.dataset_generator import create_shuffled_dataset
-from source.furuta_utils import read_yaml_parameters, create_folder_if_not_exists
+from source.furuta_utils import (read_yaml_parameters,
+                                 create_folder_if_not_exists,
+                                 plot_training)
 
 configuration_path = '../config'
 datasets_path = '../data/datasets'
 models_path = '../data/models'
+results_path = '../data/results'
 
 
 def save_dataset(data: pd.DataFrame,
@@ -33,25 +37,56 @@ def save_model(model,
     model.save(model_path)
 
 
-def create_model_architecture(input_shape,
-                              number_units,
-                              activation_hidden_layers,
-                              activation_output_layer) -> Sequential:
+def create_model(input_shape,
+                 number_units,
+                 activation_hidden_layers,
+                 activation_output_layer,
+                 loss_type,
+                 metrics_type,
+                 optimizer_type,
+                 learning_rate,
+                 regularizer_type,
+                 regularizer_value,
+                 dropout) -> "Sequential":
+
     model = Sequential()
 
     model.add(Input(shape=(input_shape, )))
 
-    number_layers = len(number_units)
-    last_layer_index = number_layers - 1
+    regularizer = get_regularizer(regularizer_type=regularizer_type,
+                                  regularizer_value=regularizer_value)
 
     for layer_index, layer_units in enumerate(number_units):
-        activation_function = activation_hidden_layers
-        if layer_index == last_layer_index:
-            activation_function = activation_output_layer
         model.add(Dense(units=layer_units,
-                        activation=activation_function))
+                        kernel_regularizer=regularizer,
+                        activation=activation_hidden_layers))
+        model.add(Dropout(dropout))
+    model.add(Dense(units=1,
+                    activation=activation_output_layer))
+
+    loss = get_loss_function(loss_type=loss_type)
+    metrics = get_metrics(metrics_type=metrics_type)
+    optimizer = get_optimizer(optimizer_type=optimizer_type,
+                              learning_rate=learning_rate)
+
+    model.compile(loss=loss,
+                  optimizer=optimizer,
+                  metrics=metrics)
 
     return model
+
+
+def get_regularizer(regularizer_type: str,
+                    regularizer_value: float) -> "keras.regularizers":
+    regularizer_classes = {'l1': keras.regularizers.l1,
+                           'l2': keras.regularizers.l2,
+                           'l1_l2': keras.regularizers.l1_l2}
+
+    try:
+        selected_regularizer = regularizer_classes[regularizer_type](regularizer_value)
+        return selected_regularizer
+    except KeyError:
+        print(f'Regularizer {regularizer_type} not implemented yet.')
 
 
 def get_optimizer(optimizer_type: str,
@@ -146,34 +181,34 @@ if __name__ == '__main__':
                      folder_to_save=datasets_path,
                      file_name=dataset_configuration_dev_test['name'])
 
-    # CREATE THE ARCHITECTURE
-    furuta_pendulum_model = create_model_architecture(input_shape=neural_network_configuration['architecture']['input_shape'],
-                                                      number_units=neural_network_configuration['architecture']['number_units'],
-                                                      activation_hidden_layers=neural_network_configuration['architecture']['activation_hidden_layers'],
-                                                      activation_output_layer=neural_network_configuration['architecture']['activation_output_layer'])
+    # CREATE THE MODEL
+    furuta_pendulum_model = create_model(input_shape=neural_network_configuration['architecture']['input_shape'],
+                                         number_units=neural_network_configuration['architecture']['number_units'],
+                                         activation_hidden_layers=neural_network_configuration['architecture']['activation_hidden_layers'],
+                                         activation_output_layer=neural_network_configuration['architecture']['activation_output_layer'],
+                                         loss_type=neural_network_configuration['loss'],
+                                         metrics_type=neural_network_configuration['metrics'],
+                                         optimizer_type=neural_network_configuration['optimizer']['optimizer_type'],
+                                         learning_rate=neural_network_configuration['optimizer']['learning_rate'],
+                                         regularizer_type=neural_network_configuration['architecture']['regularization']['type'],
+                                         regularizer_value=neural_network_configuration['architecture']['regularization']['penalty'],
+                                         dropout=neural_network_configuration['architecture']['dropout'])
 
-    # SET OPTIMIZER, LOSS FUNCTION, METRICS AND CALLBACKS
-    optimizer = get_optimizer(optimizer_type=neural_network_configuration['optimizer']['optimizer_type'],
-                              learning_rate=neural_network_configuration['optimizer']['learning_rate'])
-    loss = get_loss_function(loss_type=neural_network_configuration['loss'])
-    metrics = get_metrics(metrics_type=neural_network_configuration['metrics'])
+    # SET CALLBACKS
     callbacks = [get_callbacks(callback_type, configuration) for callback_type, configuration in callbacks_configuration.items()]
-
-    furuta_pendulum_model.compile(loss=loss,
-                                  optimizer=optimizer,
-                                  metrics=metrics)
 
     # LOAD MODEL IF WE WANT TO RE-TRAIN
     if training_configuration['retrain']:
         furuta_pendulum_model.load_weights(callbacks_configuration['model_checkpoint']['filepath'])
 
     # SEPARATE FEATURES AND TARGETS FROM TRAINING, DEV AND TEST SETS
-    train_features, train_target = training_dataset[training_configuration['features']], training_dataset[training_configuration['target']]
-    dev_test_features, dev_test_targets = dev_test_dataset[training_configuration['features']], dev_test_dataset[training_configuration['target']]
+    train_features, train_target = training_dataset[training_configuration['features']], training_dataset.pop(*training_configuration['target'])
+    dev_test_features, dev_test_targets = dev_test_dataset[training_configuration['features']], dev_test_dataset.pop(*training_configuration['target'])
 
-    dev_features, test_features, dev_target, test_target = train_test_split(dev_test_features.values,
-                                                                            dev_test_targets.values,
+    dev_features, test_features, dev_target, test_target = train_test_split(dev_test_features,
+                                                                            dev_test_targets,
                                                                             test_size=training_configuration['test_size'],
+                                                                            random_state=73,
                                                                             shuffle=False)
     # TRAIN THE NEURAL NETWORK
     history = furuta_pendulum_model.fit(train_features.values,
@@ -185,11 +220,49 @@ if __name__ == '__main__':
                                         verbose=1,
                                         shuffle=False)
 
+    scores = furuta_pendulum_model.evaluate(test_features,
+                                            test_target)
+    scores_df = pd.DataFrame({'loss': scores[0],
+                              'mae': scores[1]}, index=['results'])
+
+    predictions = furuta_pendulum_model.predict(test_features)
+
+    comparison = pd.DataFrame({'predictions': predictions.flatten(),
+                               'targets': test_target})
+    comparison = comparison.reset_index(drop=True)
+
     # SAVE MODEL IN DATA FOLDER
     save_model(model=furuta_pendulum_model,
                folder_to_save=models_path,
                name=training_configuration['model_name'])
 
-    scores = furuta_pendulum_model.evaluate(test_features,
-                                            test_target)
-    predictions = furuta_pendulum_model.predict(test_features)
+    comparison.to_csv(f'{results_path}/{training_configuration["model_name"]}_comparison.csv')
+    scores_df.to_csv(f'{results_path}/{training_configuration["model_name"]}_scores.csv', index=False)
+    plot_training(history, 'loss')
+    # model = SVR()
+    #
+    # # GRID SEARCH
+    # kernel = ['linear', 'poly', 'rbf', 'sigmoid']  # type of kernel when projecting data into higher dimension
+    # tolerance = [1e-3, 1e-4, 1e-5, 1e-6]  # tolerance for stopping criterion
+    # C = [1, 1.5, 2, 3.5, 10]  # regularization parameter
+    # grid = dict(kernel=kernel, tol=tolerance, C=C)
+    #
+    # cv = RepeatedKFold(n_splits=10, n_repeats=3, random_state=1)
+    # grid_search = GridSearchCV(estimator=model, param_grid=grid, n_jobs=-1, cv=cv, scoring='neg_mean_squared_error')
+    # grid_result = grid_search.fit(train_features, train_target)
+    # best_model = grid_result.best_estimator_
+    # print("Best: %f using %s" % (grid_result.best_score_, grid_result.best_params_))
+    # print("R2 score: %f" % best_model.score(test_features, test_target))
+    #
+    # # RANDOM SEARCH
+    # kernel = ['linear', 'poly', 'rbf', 'sigmoid']  # type of kernel when projecting data into higher dimension
+    # tolerance = loguniform(1e-6, 1e-3)  # tolerance for stopping criterion
+    # C = [1, 1.5, 2, 3.5, 10]  # regularization parameter
+    # grid = dict(kernel=kernel, tol=tolerance, C=C)
+    #
+    # cv = RepeatedKFold(n_splits=10, n_repeats=3, random_state=1)
+    # random_search = RandomizedSearchCV(estimator=model, param_distributions=grid, n_jobs=-1, cv=cv, scoring='neg_mean_squared_error')
+    # random_result = random_search.fit(train_features, train_target)
+    # best_model = random_result.best_estimator_
+    # print("Best: %f using %s" % (random_result.best_score_, random_result.best_params_))
+    # print("R2 score: %f" % best_model.score(test_features, test_target))

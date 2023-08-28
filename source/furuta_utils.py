@@ -1,5 +1,6 @@
 import yaml
 import os
+import matplotlib.pyplot as plt
 
 
 def read_yaml_parameters(folder_path: str, yaml_file: str = None) -> dict:
@@ -35,3 +36,19 @@ def create_folder_if_not_exists(folder_path: str) -> None:
     """
     if not os.path.exists(folder_path):
         os.makedirs(folder_path)
+
+
+def plot_training(history,
+                  metric):
+    data = history.history.get(metric)
+    validation_data = history.history.get(f'val_{metric}')
+    epochs = range(1, len(data) + 1, 1)
+
+    plt.plot(epochs, data, 'r--', label=f'Training {metric}')
+    plt.plot(epochs, validation_data, 'b', label=f'Validation {metric}')
+    plt.ylabel(f'{metric}')
+    plt.xlabel('epochs')
+    plt.title(f'Training {metric} vs Validation {metric}')
+
+    plt.legend()
+    plt.show()
